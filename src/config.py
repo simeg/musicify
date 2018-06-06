@@ -7,7 +7,7 @@ import yaml
 logger = logging.getLogger(__name__)
 is_production = bool(os.environ.get('IS_PRODUCTION', default=False))
 
-config_path = "./src/resources/config.yaml"
+config_path = "./src/config.yaml"
 
 
 def spotify_api():
@@ -20,10 +20,10 @@ def face_api():
 
 def _get_config_key(key):
     config = _get_config()
-    try:
+    if key in config:
         return config[key]
-    except KeyError:
-        logger.exception("Key [%s] does not exist in config dict", key)
+    else:
+        logger.error("Key [%s] does not exist in config dict", key)
 
 
 def _get_config():

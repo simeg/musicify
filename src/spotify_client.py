@@ -1,5 +1,6 @@
 import logging
 from random import randint
+from flask import abort
 
 import requests
 
@@ -12,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 def get_personalised_tracks(_emotions, limit=1):
-    # TODO: Assert limit 1 - 100
-    # TODO: Assert _emotions != None ?
+    _verify_params(_emotions, limit)
+
     logger.info(
         "Getting [%i] personalised tracks for [%s]" % (limit, _emotions))
     tracks = _get_tracks(_build_seed_entity(_emotions), limit)
@@ -21,11 +22,17 @@ def get_personalised_tracks(_emotions, limit=1):
     return tracks
 
 
+def _verify_params(_emotions, limit):
+    if limit < 1 or limit > 100:
+        abort(
+            400, "The limit param has to be between 1 and 100")  # Bad request
+    if not _emotions:
+        abort(400, "No emotions dict sent")  # Bad request
+
+
 def _get_tracks(seed, limit):
     url = "https://api.spotify.com/v1/recommendations"
     seed["limit"] = limit
-
-    print(seed)
 
     response = requests.get(url, params=seed, headers=request_auth_token())
     if response.status_code != 200:

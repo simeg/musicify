@@ -12,18 +12,14 @@ logger = logging.getLogger(__name__)
 def get_emotions(image):
     logger.info("Will try to fetch emotions for image")
 
-    subscription_key = cfg.face_api()['subscription_key']
     url = 'https://northeurope.api.cognitive.microsoft.com/face/v1.0' \
           '/detect?returnFaceAttributes=emotion'
-
-    image_path = "images/emotion_1.jpg"
-    image_data = open(image_path, "rb").read()
-
     headers = {
         "Content-Type": "application/octet-stream",
-        'Ocp-Apim-Subscription-Key': subscription_key,
+        'Ocp-Apim-Subscription-Key': cfg.face_api()['subscription_key'],
     }
-    response = requests.post(url, headers=headers, data=image_data)
+
+    response = requests.post(url, headers=headers, data=image)
     if response.status_code != 200:
         raise EmotionAPIConnectionError(response.reason)
 

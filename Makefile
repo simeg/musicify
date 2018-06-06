@@ -12,7 +12,8 @@ build:
 	docker build -t $(IMAGE_NAME):latest .
 
 deploy: lint test build login
-	heroku container:push web && heroku container:release web
+	heroku container:push web
+	heroku container:release web
 
 deps:
 	pip install -r requirements.txt
