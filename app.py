@@ -36,7 +36,7 @@ def _tracks():
         # if image and utils.allowed_file_type(image.filename):
         if image:
             tracks = spotify_client.get_personalised_tracks(
-                emotion_client.get_emotions(image.read()), limit=2)
+                emotion_client.get_emotions(image.read()), limit=5)
             return jsonify({
                 'tracks': tracks
             })
