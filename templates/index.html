@@ -76,6 +76,16 @@
 </div>
 
 <!-- Track template -->
+<div class="container-fluid" id="result-container">
+    <div class="row text-center">
+        <h1>Your Songs</h1>
+        <p class="help-block">Some text here</p>
+
+        <ul id="track-list"></ul>
+
+    </div>
+</div>
+
 <script id="track-template" type="text/x-handlebars-template">
     <div>
         <div>
@@ -95,6 +105,7 @@
 
 <script type="text/javascript">
 
+
     $('#fileupload').fileupload({
         url: "/v1/tracks",
         paramName: 'face_image',
@@ -106,6 +117,7 @@
             if (data.jqXHR.responseJSON.tracks.count > 0) {
                 doneUploading('#upload-btn');
                 // Show result
+                showTrackList(data.jqXHR.responseJSON.tracks.uris);
             } else {
                 // TODO: Handle this case
                 // No tracks were found
@@ -128,6 +140,30 @@
             console.error("Error calling /v1/tracks");
         }
     });
+
+    const showTrackList = uris => {
+        $('#result-container').show();
+        $('#upload-area').hide();
+        const trackList = $('#track-list');
+        uris
+            .map(createTrackElement)
+            .map(track => trackList.append(track));
+    };
+
+    const createTrackElement = track => {
+        return `
+                <li>
+                  <iframe src="https://open.spotify.com/embed?uri=${track.uri}"
+                    width="300" height="80" frameborder="0"
+                    allowtransparency="true" allow="encrypted-media">
+                  </iframe>
+                </li>
+               `
+    };
+
+    // For getting the result page without having to upload image
+    // const uris = [{'uri': 'spotify:track:0u6Quwu7pe0lxJJPsRe4Mf'}, {'uri': 'spotify:track:2VdHRWJeGpIY0WJcQD2mYd'}];
+    // showTrackList(uris);
 
     /* Event handlers */
     const startUploadingFile = () => {

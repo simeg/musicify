@@ -1,3 +1,17 @@
+#result-container {
+    /* Initial state */
+    display: none;
+}
+
+#result-container ul {
+    margin: 0;
+    padding: 0;
+}
+
+#result-container li {
+    height: 80px;
+}
+
 #track-area {
     /* Initial state */
     display: none;

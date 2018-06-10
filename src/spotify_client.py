@@ -69,7 +69,7 @@ def _slim_response(spotify_response):
 
     return {
         "count": int(len(tracks)),
-        "tracks": slim_tracks,
+        "uris": slim_tracks,
     }
 
 
