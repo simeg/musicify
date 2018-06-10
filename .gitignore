@@ -104,4 +104,4 @@ venv.bak/
 .mypy_cache/
 
 # Credentials file
-src/resources/config.yaml
+src/config.yaml
