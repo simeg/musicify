@@ -33,7 +33,8 @@ def _tracks():
         abort(400, 'No file with name \'face_image\' sent')  # Bad request
     else:
         image = request.files['face_image']
-        if image and utils.allowed_file_type(image.filename):
+        # if image and utils.allowed_file_type(image.filename):
+        if image:
             tracks = spotify_client.get_personalised_tracks(
                 emotion_client.get_emotions(image.read()), limit=2)
             return jsonify({

@@ -105,6 +105,51 @@
 
 <script type="text/javascript">
 
+    $(() => {
+        const sayCheese = new SayCheese('#video-container', {snapshot: true});
+        sayCheese.on('start', () => {
+            $('#take-snapshot-btn').on('click', (_evt) => {
+                // Disable file upload button
+                const btnElement = $('#upload-btn');
+                btnElement.prop('disabled', true);
+                btnElement.find('input').prop('disabled', true);
+
+                sayCheese.takeSnapshot();
+            });
+        });
+        sayCheese.on('error', (error) => {
+            console.error(error);
+        });
+        sayCheese.on('snapshot', (snapshot) => {
+            startUploadingSnapshot();
+            snapshot.toBlob((image) => {
+                uploadImage(image);
+            }, 'application/octet-stream');
+        });
+        sayCheese.start();
+    });
+
+    const uploadImage = image => {
+        const form = new FormData();
+        form.append("face_image", image);
+
+        $.ajax({
+            url: "/v1/tracks",
+            type: 'POST',
+            data: form,
+            contentType: false,
+            cache: false,
+            processData: false,
+            async: false,
+        })
+            .done(response => {
+                doneUploading('#take-snapshot-btn');
+                showTrackList(response.tracks.uris);
+            })
+            .fail(error => {
+                console.error(error);
+            });
+    };
 
     $('#fileupload').fileupload({
         url: "/v1/tracks",
@@ -124,7 +169,7 @@
                 console.log("No tracks were found")
             }
         },
-        start: (event, data) => {
+        start: (_event, _data) => {
             startUploadingFile();
             // Disable file upload button
             $('#take-snapshot-btn').prop('disabled', true);
@@ -136,7 +181,7 @@
                 progress + '%'
             );
         },
-        fail: (event, data) => {
+        fail: (_event, _data) => {
             console.error("Error calling /v1/tracks");
         }
     });
@@ -166,6 +211,13 @@
     // showTrackList(uris);
 
     /* Event handlers */
+    const startUploadingSnapshot = () => {
+        const btnElement = $('#take-snapshot-btn');
+        btnElement.prop('disabled', true);
+        btnElement.find('i').attr('class', 'glyphicon glyphicon-upload icon-padding');
+        btnElement.find('span').text('Uploading...');
+    };
+
     const startUploadingFile = () => {
         $('#progress').show();
         const btnElement = $('#upload-btn');
