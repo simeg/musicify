@@ -17,7 +17,6 @@ RUN pip3 install --no-cache-dir -qr /tmp/requirements.txt
 
 ADD src /src
 ADD app.py /app.py
-ADD images /images
 ADD static /static
 ADD templates /templates
 
