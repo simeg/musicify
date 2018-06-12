@@ -4,7 +4,7 @@ import operator
 import requests
 
 from src import config as cfg
-from src.exceptions import EmotionAPIConnectionError
+from src.exceptions import EmotionAPIConnectionError, EmotionAPIResponseError
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,13 @@ def get_emotions(image):
         raise EmotionAPIConnectionError(response.reason)
 
     json = response.json()
+    if not json:  # If no face found, an empty array is returned
+        raise EmotionAPIResponseError("Could not find a face in the image")
+
+    if len(json) > 1:
+        logger.info(
+            "Found more than one face in the image, choosing the first one")
+
     face_emotions = json[0].get('faceAttributes').get('emotion')
 
     logger.info("Successfully fetched emotions for image")

@@ -10,7 +10,7 @@ from flask import \
     render_template, \
     abort
 
-from src import spotify_client, emotion_client, utils
+from src import spotify_client, emotion_client
 
 app = Flask(__name__, static_folder='static')
 
