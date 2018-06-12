@@ -1,4 +1,5 @@
 from random import randint
+from typing import List
 
 _all_genres = \
     ["acoustic", "afrobeat", "alt-rock", "alternative", "ambient",
@@ -27,11 +28,11 @@ _all_genres = \
      "work-out", "world-music"]
 
 
-def get_random_genre():
+def get_random_genre() -> str:
     count = len(_all_genres)
     random_int = randint(0, (count - 1))
     return _all_genres[random_int]
 
 
-def get_genres():
+def get_genres() -> List[str]:
     return _all_genres

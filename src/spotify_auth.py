@@ -1,5 +1,6 @@
 import base64
 import json
+from typing import Dict
 
 import requests
 
@@ -7,7 +8,7 @@ from src import config as cfg
 from src.exceptions import SpotifyConnectionError
 
 
-def request_auth_token():
+def request_auth_token() -> Dict[str, str]:
     url = "https://accounts.spotify.com/api/token"
     payload = {'grant_type': 'client_credentials'}
 
@@ -21,7 +22,7 @@ def request_auth_token():
     return {"Authorization": "Bearer {}".format(access_token)}
 
 
-def _build_auth_header():
+def _build_auth_header() -> Dict[str, str]:
     config = cfg.spotify_api()
     auth_str = '{}:{}'.format(config['client_id'], config['client_secret'])
     b64_auth_str = base64.urlsafe_b64encode(auth_str.encode()).decode()

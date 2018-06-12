@@ -10,7 +10,7 @@ from flask import \
     render_template, \
     abort
 
-from src import spotify_client, emotion_client
+from src import spotify_client, emotion_client, utils
 
 app = Flask(__name__, static_folder='static')
 
@@ -33,8 +33,7 @@ def _tracks():
         abort(400, 'No file with name \'face_image\' sent')  # Bad request
     else:
         image = request.files['face_image']
-        # if image and utils.allowed_file_type(image.filename):
-        if image:
+        if image and utils.allowed_file_type(image.filename):
             tracks = spotify_client.get_personalised_tracks(
                 emotion_client.get_emotions(image.read()), limit=5)
             return jsonify({

@@ -1,5 +1,6 @@
 import logging
 import operator
+from typing import Dict
 
 import requests
 
@@ -8,8 +9,10 @@ from src.exceptions import EmotionAPIConnectionError, EmotionAPIResponseError
 
 logger = logging.getLogger(__name__)
 
+Emotions = Dict[str, float]
 
-def get_emotions(image):
+
+def get_emotions(image) -> Emotions:
     logger.info("Will try to fetch emotions for image")
 
     url = 'https://northeurope.api.cognitive.microsoft.com/face/v1.0' \
@@ -37,7 +40,7 @@ def get_emotions(image):
     return face_emotions
 
 
-def is_happy(emotions):
+def is_happy(emotions: Emotions) -> bool:
     """Slimmed down way of saying if the strongest emotion
        is a happy emotion or not"""
     strongest_emotion = max(emotions.items(), key=operator.itemgetter(1))[0]

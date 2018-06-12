@@ -1,18 +1,24 @@
 import logging
 from random import randint
-from flask import abort
+from typing import Any, Dict, NoReturn
 
 import requests
+from flask import abort
 
-from src.spotify_auth import request_auth_token
-from src.emotion_client import is_happy
+from src.emotion_client import is_happy, Emotions
 from src.exceptions import SpotifyConnectionError
 from src.genres import get_random_genre
+from src.spotify_auth import request_auth_token
 
 logger = logging.getLogger(__name__)
 
+Track = (str, Any)
+Tracks = Dict[str, Any]
 
-def get_personalised_tracks(_emotions, limit=1):
+
+def get_personalised_tracks(
+        _emotions: Emotions,
+        limit: int = 1) -> Tracks:
     _verify_params(_emotions, limit)
 
     logger.info(
@@ -22,7 +28,7 @@ def get_personalised_tracks(_emotions, limit=1):
     return tracks
 
 
-def _verify_params(_emotions, limit):
+def _verify_params(_emotions: Emotions, limit: int) -> NoReturn:
     if limit < 1 or limit > 100:
         abort(
             400, "The limit param has to be between 1 and 100")  # Bad request
@@ -30,7 +36,7 @@ def _verify_params(_emotions, limit):
         abort(400, "No emotions dict sent")  # Bad request
 
 
-def _get_tracks(seed, limit):
+def _get_tracks(seed, limit: int) -> Tracks:
     url = "https://api.spotify.com/v1/recommendations"
     seed["limit"] = limit
 
@@ -41,7 +47,7 @@ def _get_tracks(seed, limit):
     return _slim_response(response.json())
 
 
-def _build_seed_entity(_emotions):
+def _build_seed_entity(_emotions: Emotions) -> Dict[str, Any]:
     seed = {
         "max_speechiness": 0.66,  # Do not include tracks with only spoken word
         "min_popularity": 50,  # Do not include tracks no one knows about
@@ -60,7 +66,7 @@ def _build_seed_entity(_emotions):
     return seed
 
 
-def _slim_response(spotify_response):
+def _slim_response(spotify_response: Dict[str, Any]) -> Dict[str, Any]:
     """Transform Spotify response to slimmed down version
        with exact values that we're interested in"""
 
@@ -73,7 +79,7 @@ def _slim_response(spotify_response):
     }
 
 
-def _get_track(track):
+def _get_track(track: Track) -> Dict[str, str]:
     return {
         "uri": track["uri"]
     }
