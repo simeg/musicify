@@ -105,3 +105,6 @@ venv.bak/
 
 # Credentials file
 src/config.yaml
+
+# JS lib files
+!static/lib
