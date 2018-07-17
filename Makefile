@@ -2,7 +2,7 @@
 
 # Travis cannot use 'pushd' or 'popd' without SHELL defined
 SHELL := /bin/bash
-IMAGE_NAME = moodify
+IMAGE_NAME = musicify
 
 SOURCE_FILES = $(shell find . -type f -name "*.py" -not -path "./test/*")
 
