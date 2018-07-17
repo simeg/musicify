@@ -1,6 +1,6 @@
 import logging
 from random import randint
-from typing import Any, Dict, NoReturn
+from typing import Any, Dict
 
 import requests
 from flask import abort
@@ -28,7 +28,7 @@ def get_personalised_tracks(
     return tracks
 
 
-def _verify_params(_emotions: Emotions, limit: int) -> NoReturn:
+def _verify_params(_emotions: Emotions, limit: int):
     if limit < 1 or limit > 100:
         abort(
             400, "The limit param has to be between 1 and 100")  # Bad request
