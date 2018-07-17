@@ -48,7 +48,7 @@ def _tracks():
 def _auth_callback():
     logger.info('/auth-callback called')
     return jsonify({
-        'response': spotify_auth.get_token(request)
+        'response': spotify_auth.request_token(request)
     })
 
 

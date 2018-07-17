@@ -8,7 +8,7 @@ from flask import abort
 from src.emotion_client import is_happy, Emotions
 from src.exceptions import SpotifyConnectionError
 from src.genres import get_random_genre
-from src.spotify_auth import request_auth_token
+from src.spotify_auth import legacy_request_auth_token
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ def _get_tracks(seed, limit: int) -> Tracks:
     url = "https://api.spotify.com/v1/recommendations"
     seed["limit"] = limit
 
-    response = requests.get(url, params=seed, headers=request_auth_token())
+    response = requests.get(url, params=seed, headers=legacy_request_auth_token())
     if response.status_code != 200:
         raise SpotifyConnectionError(response.reason)
 

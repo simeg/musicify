@@ -1,5 +1,7 @@
 import base64
 import json
+import logging
+import time
 from typing import Dict
 
 import requests
@@ -9,10 +11,13 @@ from urllib.parse import quote
 from src import config as cfg
 from src.exceptions import SpotifyConnectionError
 
+logger = logging.getLogger(__name__)
+
 TEMP_STATE = 'TODO'
+FILE_PATH_TOKEN = "/tmp/spotify_token"
 
 
-def request_auth_token() -> Dict[str, str]:
+def legacy_request_auth_token() -> Dict[str, str]:
     url = 'https://accounts.spotify.com/api/token'
     payload = {'grant_type': 'client_credentials'}
     headers = {'Authorization': _auth_header_value()}
@@ -39,7 +44,7 @@ def auth_url():
            '&state={}'.format(base_url, client_id, redirect_uri, scope, state)
 
 
-def get_token(req):
+def request_token(req):
     if req.args.get('error') is not None:
         # TODO: Raise custom exception, do not abort()
         abort(400, 'Found error')
@@ -67,12 +72,25 @@ def get_token(req):
                 response.reason)  # TODO: Raise custom exception
 
         json = response.json()
-        # TODO: Store token
+        _store_token_info(json)
 
         return json  # TODO: Just return what is needed
 
 
-def refresh_token(refresh_token):
+def get_token():
+    try:
+        token_info = _read_token()
+        if _is_token_expired(token_info):
+            refreshed_token = _refresh_token(token_info['refresh_token'])
+            _store_token_info(refreshed_token)
+            return refreshed_token
+        else:
+            return token_info
+    except IOError:
+        return None
+
+
+def _refresh_token(refresh_token):
     base_url = 'https://accounts.spotify.com/api/token'
     payload = {
         'grant_type': 'refresh_token',
@@ -86,6 +104,33 @@ def refresh_token(refresh_token):
             response.reason)  # TODO: Raise custom exception
 
     return response.json()
+
+
+def _store_token_info(token_info):
+    try:
+        f = open(FILE_PATH_TOKEN, 'w')
+        f.write(json.dumps(token_info))
+        f.close()
+        logger.info("Successfully wrote token to cache")
+    except IOError:
+        logger.error("Unable to write token cache to [%s]" % FILE_PATH_TOKEN)
+        pass
+
+
+def _read_token():
+    try:
+        f = open(FILE_PATH_TOKEN, 'r')
+        token_info = f.read()
+        f.close()
+        return json.loads(token_info)
+    except IOError:
+        logger.error("Unable to read from file at [%s]" % FILE_PATH_TOKEN)
+        return None
+
+
+def _is_token_expired(token_info):
+    now = int(time.time())
+    return token_info['expires_at'] - now < 60
 
 
 def _get_headers():
