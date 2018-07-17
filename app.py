@@ -10,7 +10,7 @@ from flask import \
     render_template, \
     abort
 
-from src import spotify_client, emotion_client, utils
+from src import spotify_auth, spotify_client, emotion_client, utils
 
 app = Flask(__name__, static_folder='static')
 
@@ -29,6 +29,7 @@ def _index():
 def _tracks():
     logger.info('/v1/tracks called')
 
+    # TODO: Move validation downstream?
     if 'face_image' not in request.files:
         abort(400, 'No file with name \'face_image\' sent')  # Bad request
     else:
@@ -41,6 +42,14 @@ def _tracks():
             })
         else:
             abort(400, 'Image extension not allowed')  # Bad request
+
+
+@app.route('/auth-callback', methods=['get'])
+def _auth_callback():
+    logger.info('/auth-callback called')
+    return jsonify({
+        'response': spotify_auth.get_token(request)
+    })
 
 
 @app.route('/robots.txt')
