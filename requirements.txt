@@ -1,6 +1,5 @@
 requests
 Flask
-BeautifulSoup4
 pycodestyle
 mypy
 pytest-cov

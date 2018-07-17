@@ -6,7 +6,7 @@ from typing import Dict, Any
 import yaml
 
 logger = logging.getLogger(__name__)
-is_production = bool(os.environ.get('IS_PRODUCTION', default=False))
+IS_PRODUCTION = bool(os.environ.get('IS_PRODUCTION', default=False))
 
 config_path = "./src/config.yaml"
 
@@ -30,7 +30,7 @@ def _get_config_key(key) -> Config:
 
 
 def _get_config() -> Config:
-    if is_production:
+    if IS_PRODUCTION:
         env = os.environ
         return {
             "spotify_api": {
