@@ -25,6 +25,9 @@
 
 </head>
 <body>
+
+<button id="test-flow">TEST THE AUTH FLOW</button>
+
 <div class="container-fluid" id="upload-area">
     <div class="row text-center">
         <h1>Musicify</h1>
@@ -89,11 +92,11 @@
 <script id="track-template" type="text/x-handlebars-template">
     <div>
         <div>
-            <h3>Because your strongest feeling is: {{emotion}}</h3>
+            <h3>Because your strongest feeling is: {{ emotion }}</h3>
             <p class="help-block">We recommend this song</p>
         </div>
         <iframe
-                src="https://embed.spotify.com/?uri=spotify%3Atrack%{{track_url}}"
+                src="https://embed.spotify.com/?uri=spotify%3Atrack%{{ track_url }}"
                 width="300"
                 height="380"
                 frameborder="0"
@@ -246,6 +249,20 @@
         });
     };
 
+    $('#test-flow').on('click', (_evt) => {
+        console.log("test flow btn pressed");
+        $.ajax({
+            url: "/v1/auth",
+            type: 'GET',
+        })
+            .done(response => {
+                console.log(response);
+                window.location.replace(response);
+            })
+            .fail(error => {
+                console.error(error);
+            });
+    });
 
 </script>
 

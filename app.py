@@ -52,6 +52,12 @@ def _auth_callback():
     })
 
 
+@app.route('/v1/auth', methods=['get'])
+def _auth():
+    logger.info('/v1/auth called')
+    return spotify_auth.auth_url()
+
+
 @app.route('/robots.txt')
 @app.route('/sitemap.xml')
 def _robots():
