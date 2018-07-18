@@ -3,7 +3,6 @@ import os
 
 from flask import \
     Flask, \
-    abort, \
     jsonify, \
     make_response, \
     redirect, \
@@ -11,8 +10,9 @@ from flask import \
     request, \
     send_from_directory
 
-from src import spotify_auth, spotify_client, emotion_client, utils
-from src.utils import exists, allowed_file_type
+from src import config as cfg
+from src.spotify_oauth import SpotifyOAuth
+from src.utils import exists
 
 app = Flask(__name__, static_folder='static')
 
@@ -30,41 +30,44 @@ def _index():
 
 @app.route('/login', methods=['GET'])
 def _login():
+    spotify = _spotify_oauth()
     logger.info('/login called')
+    app.logger.info('/login called')
 
-    cookie_token = request.cookies.get("spotify_token")
+    cookie_token = request.cookies.get('spotify_token')
     if exists(cookie_token):
-        logger.info("Token found")
+        logger.info('Token found')
 
-        current_token = spotify_auth.cookie_to_dict(cookie_token)
-        if spotify_auth.is_token_expired(current_token):
-            logger.info("Token is expired - requesting new token")
-            refresh_token = spotify_auth.refresh_token(current_token)
+        current_token = spotify.cookie_to_dict(cookie_token)
+        if spotify.is_token_expired(current_token):
+            logger.info('Token is expired - requesting new token')
+            refresh_token = spotify.refresh_token(current_token)
             refresh_token['refresh_token'] = current_token['refresh_token']
             current_token = refresh_token
 
-        logger.info("Redirecting to /mix")
+        logger.info('Redirecting to /mix')
         response = make_response(redirect('/mix'))
-        cookie = spotify_auth.json_to_cookie(current_token)
-        logger.info("Setting token as cookie: %s" % cookie)
-        response.set_cookie("spotify_token", cookie)
+        cookie = spotify.json_to_cookie(current_token)
+        logger.info('Setting token as cookie: %s' % cookie)
+        response.set_cookie('spotify_token', cookie)
 
         return response
     else:
-        logger.info("No token found - getting one")
-        return redirect(spotify_auth.auth_url(), code=302)
+        logger.info('No token found - getting one')
+        return redirect(spotify.auth_url(), code=302)
 
 
 @app.route('/callback', methods=['GET'])
 def _callback():
+    spotify = _spotify_oauth()
     logger.info('/callback called')
 
-    token = spotify_auth.request_new_token(request)
+    token = spotify.request_new_token(request)
 
     response = make_response(redirect('/mix'))
-    cookie = spotify_auth.json_to_cookie(token)
-    logger.info("Setting token as cookie: %s" % cookie)
-    response.set_cookie("spotify_token", cookie)
+    cookie = spotify.json_to_cookie(token)
+    logger.info('Setting token as cookie: %s' % cookie)
+    response.set_cookie('spotify_token', cookie)
 
     return response
 
@@ -72,30 +75,31 @@ def _callback():
 @app.route('/mix', methods=['GET'])
 def _mix():
     logger.info('/mix called')
-    if request.cookies.get("spotify_token") is None:
-        logger.info("No auth cookie found - redirecting to /login")
-        return redirect("/login", code=302)
+    if request.cookies.get('spotify_token') is None:
+        logger.info('No auth cookie found - redirecting to /login')
+        return redirect('/login', code=302)
 
     return make_response(render_template('mix.html'))
 
 
-@app.route('/v1/tracks', methods=['POST'])
-def _tracks():
-    logger.info('/v1/tracks called')
-
-    # TODO: Move validation downstream?
-    if 'face_image' not in request.files:
-        abort(400, 'No file with name \'face_image\' sent')  # Bad request
-    else:
-        image = request.files['face_image']
-        if image and allowed_file_type(image.filename):
-            tracks = spotify_client.get_personalised_tracks(
-                emotion_client.get_emotions(image.read()), limit=5)
-            return jsonify({
-                'tracks': tracks
-            })
-        else:
-            abort(400, 'Image extension not allowed')  # Bad request
+#
+# @app.route('/v1/tracks', methods=['POST'])
+# def _tracks():
+#     logger.info('/v1/tracks called')
+#
+#     # TODO: Move validation downstream?
+#     if 'face_image' not in request.files:
+#         abort(400, 'No file with name \'face_image\' sent')  # Bad request
+#     else:
+#         image = request.files['face_image']
+#         if image and allowed_file_type(image.filename):
+#             tracks = spotify_client.get_personalised_tracks(
+#                 emotion_client.get_emotions(image.read()), limit=5)
+#             return jsonify({
+#                 'tracks': tracks
+#             })
+#         else:
+#             abort(400, 'Image extension not allowed')  # Bad request
 
 
 @app.route('/robots.txt')
@@ -113,6 +117,20 @@ def _handle_error(error):
         'error_msg': error.description,
         'error_code': int(error.code),
     }), error.code)
+
+
+def _spotify_oauth() -> SpotifyOAuth:
+    c = cfg.spotify_api()
+    redirect_uri = 'TODO' if IS_PRODUCTION else 'http://0.0.0.0:8000/callback'
+    state = 'TODO'
+    scope = 'user-read-private'
+    return SpotifyOAuth(
+        client_id=c['client_id'],
+        client_secret=c['client_secret'],
+        redirect_uri=redirect_uri,
+        state=state,
+        scope=scope
+    )
 
 
 if __name__ == '__main__':

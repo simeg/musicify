@@ -8,7 +8,7 @@ from flask import abort
 from src.emotion_client import is_happy, Emotions
 from src.exceptions import SpotifyConnectionError
 from src.genres import get_random_genre
-from src.spotify_auth import legacy_request_auth_token
+from src.spotify_oauth import legacy_request_auth_token
 
 logger = logging.getLogger(__name__)
 
