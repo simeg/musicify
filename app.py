@@ -40,7 +40,7 @@ def _login():
             refresh_token['refresh_token'] = token['refresh_token']
             spotify_auth.cache_token(refresh_token)
 
-        return render_template('mix.html')
+        return redirect('/mix')
     else:
         logger.info("No token found - getting one")
         return redirect(spotify_auth.auth_url(), code=302)
@@ -50,13 +50,19 @@ def _login():
 def _callback():
     logger.info('/callback called')
     spotify_auth.request_token(request)
-    return render_template('mix.html')
+    return redirect('/mix')
 
 
 @app.route('/v1/auth', methods=['GET'])
 def _auth():
     logger.info('/v1/auth called')
     return spotify_auth.auth_url()
+
+
+@app.route('/mix', methods=['GET'])
+def _mix():
+    logger.info('/mix called')
+    return render_template('mix.html')
 
 
 @app.route('/v1/tracks', methods=['POST'])
