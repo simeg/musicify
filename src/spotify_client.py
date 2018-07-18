@@ -40,7 +40,8 @@ def _get_tracks(seed, limit: int) -> Tracks:
     url = "https://api.spotify.com/v1/recommendations"
     seed["limit"] = limit
 
-    response = requests.get(url, params=seed, headers=legacy_request_auth_token())
+    response = requests.get(url, params=seed,
+                            headers=legacy_request_auth_token())
     if response.status_code != 200:
         raise SpotifyConnectionError(response.reason)
 
