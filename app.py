@@ -17,7 +17,7 @@ app = Flask(__name__, static_folder='static')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-is_production = bool(os.environ.get('IS_PRODUCTION', default=False))
+IS_PRODUCTION = bool(os.environ.get('IS_PRODUCTION', default=False))
 
 
 @app.route('/')
@@ -89,5 +89,5 @@ def _handle_error(error):
 
 if __name__ == '__main__':
     # Flask server is only used during development
-    if not is_production:
+    if not IS_PRODUCTION:
         app.run(debug=True, host='0.0.0.0', port=8000)
