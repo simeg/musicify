@@ -19,7 +19,7 @@ deps:
 	pip install -r requirements.txt
 
 lint:
-	pycodestyle --format=pylint src test
+	pycodestyle --format=pylint src test app.py
 
 login:
 	heroku container:login
