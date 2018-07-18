@@ -1,8 +1,6 @@
 requests
 Flask
 pycodestyle
-mypy
 pytest-cov
 gunicorn
 newrelic
-pyyaml

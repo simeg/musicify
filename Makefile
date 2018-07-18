@@ -37,6 +37,3 @@ test:
 test-cov:
 	@echo "Not implemented yet"
 #	pushd test; py.test --cov-report=html:../coverage --cov-report=term --no-cov-on-fail --cov src; popd
-
-type-check:
-	mypy $(SOURCE_FILES)
