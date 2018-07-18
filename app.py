@@ -3,14 +3,16 @@ import os
 
 from flask import \
     Flask, \
+    abort, \
     jsonify, \
     make_response, \
-    request, \
-    send_from_directory, \
+    redirect, \
     render_template, \
-    abort, redirect
+    request, \
+    send_from_directory
 
 from src import spotify_auth, spotify_client, emotion_client, utils
+from src.utils import exists, allowed_file_type
 
 app = Flask(__name__, static_folder='static')
 
@@ -30,17 +32,24 @@ def _index():
 def _login():
     logger.info('/login called')
 
-    token = spotify_auth.get_token()
-    if token is not None:
+    cookie_token = request.cookies.get("spotify_token")
+    if exists(cookie_token):
         logger.info("Token found")
 
-        if spotify_auth.is_token_expired(token):
+        current_token = spotify_auth.cookie_to_dict(cookie_token)
+        if spotify_auth.is_token_expired(current_token):
             logger.info("Token is expired - requesting new token")
-            refresh_token = spotify_auth.refresh_token(token)
-            refresh_token['refresh_token'] = token['refresh_token']
-            spotify_auth.cache_token(refresh_token)
+            refresh_token = spotify_auth.refresh_token(current_token)
+            refresh_token['refresh_token'] = current_token['refresh_token']
+            current_token = refresh_token
 
-        return redirect('/mix')
+        logger.info("Redirecting to /mix")
+        response = make_response(redirect('/mix'))
+        cookie = spotify_auth.json_to_cookie(current_token)
+        logger.info("Setting token as cookie: %s" % cookie)
+        response.set_cookie("spotify_token", cookie)
+
+        return response
     else:
         logger.info("No token found - getting one")
         return redirect(spotify_auth.auth_url(), code=302)
@@ -49,14 +58,25 @@ def _login():
 @app.route('/callback', methods=['GET'])
 def _callback():
     logger.info('/callback called')
-    spotify_auth.request_token(request)
-    return redirect('/mix')
+
+    token = spotify_auth.request_new_token(request)
+
+    response = make_response(redirect('/mix'))
+    cookie = spotify_auth.json_to_cookie(token)
+    logger.info("Setting token as cookie: %s" % cookie)
+    response.set_cookie("spotify_token", cookie)
+
+    return response
 
 
 @app.route('/mix', methods=['GET'])
 def _mix():
     logger.info('/mix called')
-    return render_template('mix.html')
+    if request.cookies.get("spotify_token") is None:
+        logger.info("No auth cookie found - redirecting to /login")
+        return redirect("/login", code=302)
+
+    return make_response(render_template('mix.html'))
 
 
 @app.route('/v1/tracks', methods=['POST'])
@@ -68,7 +88,7 @@ def _tracks():
         abort(400, 'No file with name \'face_image\' sent')  # Bad request
     else:
         image = request.files['face_image']
-        if image and utils.allowed_file_type(image.filename):
+        if image and allowed_file_type(image.filename):
             tracks = spotify_client.get_personalised_tracks(
                 emotion_client.get_emotions(image.read()), limit=5)
             return jsonify({

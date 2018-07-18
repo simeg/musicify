@@ -32,7 +32,7 @@ def auth_url():
            '&state={}'.format(base_url, client_id, redirect_uri, scope, state)
 
 
-def request_token(req):
+def request_new_token(req):
     if req.args.get('error') is not None:
         # TODO: Raise custom exception, do not abort()
         abort(400, 'Found error')
@@ -59,18 +59,11 @@ def request_token(req):
             raise SpotifyConnectionError(
                 response.reason)  # TODO: Raise custom exception
 
-        json = response.json()
-        json['expires_at'] = int(time.time()) + json['expires_in']
-        cache_token(json)
+        response_json = response.json()
+        response_json['expires_at'] = \
+            int(time.time()) + response_json['expires_in']
 
-        return json  # TODO: Just return what is needed
-
-
-def get_token():
-    try:
-        return _read_cached_token()
-    except IOError:
-        return None
+        return response_json
 
 
 def refresh_token(token):
@@ -89,36 +82,33 @@ def refresh_token(token):
         raise SpotifyConnectionError(
             response.reason)  # TODO: Raise custom exception
 
-    return response.json()
+    response_json = response.json()
+    response_json['expires_at'] = \
+        int(time.time()) + response_json['expires_in']
 
-
-def cache_token(token_info):
-    try:
-        f = open(FILE_PATH_TOKEN, 'w')
-        f.write(json.dumps(token_info))
-        f.close()
-        logger.info("Successfully wrote token to cache")
-    except IOError:
-        logger.error("Unable to write token cache to [%s]" % FILE_PATH_TOKEN)
-        pass
-
-
-def _read_cached_token():
-    try:
-        f = open(FILE_PATH_TOKEN, 'r')
-        token_info = f.read()
-        f.close()
-        return json.loads(token_info)
-    except IOError:
-        logger.error("Unable to read from file at [%s]" % FILE_PATH_TOKEN)
-        return None
+    return response_json
 
 
 def is_token_expired(token):
     now = int(time.time())
-    token_is_expired = token['expires_at'] - now < 60
-    logger.info("Token is expired is [%s]" % token_is_expired)
-    return token_is_expired
+    return int(token['expires_at']) - now < 60
+
+
+def json_to_cookie(json):
+    return "{}|{}|{}".format(
+        json['access_token'],
+        json['refresh_token'],
+        json['expires_at']
+    )
+
+
+def cookie_to_dict(cookie):
+    split = cookie.split("|")
+    return {
+        'access_token': split[0],
+        'refresh_token': split[1],
+        'expires_at': split[2]
+    }
 
 
 def _get_headers():
