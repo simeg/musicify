@@ -30,41 +30,41 @@ def _index():
 
 @app.route('/login', methods=['GET'])
 def _login():
-    spotify = _spotify_oauth()
+    sp = _spotify_oauth()
     logger.info('/login called')
 
-    cookie_token = request.cookies.get('spotify_token')
+    cookie_token = _get_token(request)
     if exists(cookie_token):
         logger.info('Token found')
 
-        current_token = spotify.cookie_to_dict(cookie_token)
-        if spotify.is_token_expired(current_token):
+        current_token = sp.cookie_to_dict(cookie_token)
+        if sp.is_token_expired(current_token):
             logger.info('Token is expired - requesting new token')
-            refresh_token = spotify.refresh_token(current_token)
+            refresh_token = sp.refresh_token(current_token)
             refresh_token['refresh_token'] = current_token['refresh_token']
             current_token = refresh_token
 
         logger.info('Redirecting to /mix')
         response = make_response(redirect('/mix'))
-        cookie = spotify.json_to_cookie(current_token)
+        cookie = sp.json_to_cookie(current_token)
         logger.info('Setting token as cookie: %s' % cookie)
         response.set_cookie('spotify_token', cookie)
 
         return response
     else:
         logger.info('No token found - getting one')
-        return redirect(spotify.auth_url(), code=302)
+        return redirect(sp.get_auth_url(), code=302)
 
 
 @app.route('/callback', methods=['GET'])
 def _callback():
-    spotify = _spotify_oauth()
+    sp = _spotify_oauth()
     logger.info('/callback called')
 
-    token = spotify.request_new_token(request)
+    token = sp.get_new_token(request)
 
     response = make_response(redirect('/mix'))
-    cookie = spotify.json_to_cookie(token)
+    cookie = sp.json_to_cookie(token)
     logger.info('Setting token as cookie: %s' % cookie)
     response.set_cookie('spotify_token', cookie)
 
@@ -74,7 +74,7 @@ def _callback():
 @app.route('/mix', methods=['GET'])
 def _mix():
     logger.info('/mix called')
-    if request.cookies.get('spotify_token') is None:
+    if _get_token(request) is None:
         logger.info('No auth cookie found - redirecting to /login')
         return redirect('/login', code=302)
 
@@ -116,6 +116,13 @@ def _handle_error(error):
         'error_msg': error.description,
         'error_code': int(error.code),
     }), error.code)
+
+
+# TODO: Move these to util file,
+# this file should be clean
+
+def _get_token(request) -> str:
+    return request.cookies.get('spotify_token')
 
 
 def _spotify_oauth() -> SpotifyOAuth:
