@@ -72,32 +72,30 @@ def request_token(req):
                 response.reason)  # TODO: Raise custom exception
 
         json = response.json()
-        _store_token_info(json)
+        json['expires_at'] = int(time.time()) + json['expires_in']
+        cache_token(json)
 
         return json  # TODO: Just return what is needed
 
 
 def get_token():
     try:
-        token_info = _read_token()
-        if _is_token_expired(token_info):
-            refreshed_token = _refresh_token(token_info['refresh_token'])
-            _store_token_info(refreshed_token)
-            return refreshed_token
-        else:
-            return token_info
+        return _read_cached_token()
     except IOError:
         return None
 
 
-def _refresh_token(refresh_token):
+def refresh_token(token):
+    refresh_token = token['refresh_token']
+    if refresh_token is None:
+        abort(400, "Could not find refresh token in token dict")
+
     base_url = 'https://accounts.spotify.com/api/token'
     payload = {
         'grant_type': 'refresh_token',
         'refresh_token': str(refresh_token)
     }
-    response = requests.post(base_url, data=payload, headers=_get_headers(),
-                             verify=True)
+    response = requests.post(base_url, data=payload, headers=_get_headers())
 
     if response.status_code != 200:
         raise SpotifyConnectionError(
@@ -106,7 +104,7 @@ def _refresh_token(refresh_token):
     return response.json()
 
 
-def _store_token_info(token_info):
+def cache_token(token_info):
     try:
         f = open(FILE_PATH_TOKEN, 'w')
         f.write(json.dumps(token_info))
@@ -117,7 +115,7 @@ def _store_token_info(token_info):
         pass
 
 
-def _read_token():
+def _read_cached_token():
     try:
         f = open(FILE_PATH_TOKEN, 'r')
         token_info = f.read()
@@ -128,9 +126,11 @@ def _read_token():
         return None
 
 
-def _is_token_expired(token_info):
+def is_token_expired(token):
     now = int(time.time())
-    return token_info['expires_at'] - now < 60
+    token_is_expired = token['expires_at'] - now < 60
+    logger.info("Token is expired is [%s]" % token_is_expired)
+    return token_is_expired
 
 
 def _get_headers():

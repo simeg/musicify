@@ -8,7 +8,7 @@ from flask import \
     request, \
     send_from_directory, \
     render_template, \
-    abort
+    abort, redirect
 
 from src import spotify_auth, spotify_client, emotion_client, utils
 
@@ -22,7 +22,33 @@ is_production = bool(os.environ.get('IS_PRODUCTION', default=False))
 
 @app.route('/')
 def _index():
+    token = spotify_auth.get_token()
+    if token is not None:
+        logger.info("Token found")
+
+        if spotify_auth.is_token_expired(token):
+            logger.info("Token is expired - requesting new token")
+            refresh_token = spotify_auth.refresh_token(token)
+            refresh_token['refresh_token'] = token['refresh_token']
+            spotify_auth.cache_token(refresh_token)
+
+        return render_template('index.html')
+    else:
+        logger.info("No token found - getting one")
+        return redirect(spotify_auth.auth_url(), code=302)
+
+
+@app.route('/auth-callback', methods=['get'])
+def _auth_callback():
+    logger.info('/auth-callback called')
+    spotify_auth.request_token(request)
     return render_template('index.html')
+
+
+@app.route('/v1/auth', methods=['get'])
+def _auth():
+    logger.info('/v1/auth called')
+    return spotify_auth.auth_url()
 
 
 @app.route('/v1/tracks', methods=['POST'])
@@ -42,20 +68,6 @@ def _tracks():
             })
         else:
             abort(400, 'Image extension not allowed')  # Bad request
-
-
-@app.route('/auth-callback', methods=['get'])
-def _auth_callback():
-    logger.info('/auth-callback called')
-    return jsonify({
-        'response': spotify_auth.request_token(request)
-    })
-
-
-@app.route('/v1/auth', methods=['get'])
-def _auth():
-    logger.info('/v1/auth called')
-    return spotify_auth.auth_url()
 
 
 @app.route('/robots.txt')
