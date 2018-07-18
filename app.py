@@ -53,12 +53,6 @@ def _callback():
     return redirect('/mix')
 
 
-@app.route('/v1/auth', methods=['GET'])
-def _auth():
-    logger.info('/v1/auth called')
-    return spotify_auth.auth_url()
-
-
 @app.route('/mix', methods=['GET'])
 def _mix():
     logger.info('/mix called')
