@@ -20,8 +20,16 @@ logger = logging.getLogger(__name__)
 IS_PRODUCTION = bool(os.environ.get('IS_PRODUCTION', default=False))
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def _index():
+    logger.info('/ called')
+    return render_template('index.html')
+
+
+@app.route('/login', methods=['GET'])
+def _login():
+    logger.info('/login called')
+
     token = spotify_auth.get_token()
     if token is not None:
         logger.info("Token found")
@@ -32,20 +40,20 @@ def _index():
             refresh_token['refresh_token'] = token['refresh_token']
             spotify_auth.cache_token(refresh_token)
 
-        return render_template('index.html')
+        return render_template('mix.html')
     else:
         logger.info("No token found - getting one")
         return redirect(spotify_auth.auth_url(), code=302)
 
 
-@app.route('/auth-callback', methods=['get'])
-def _auth_callback():
-    logger.info('/auth-callback called')
+@app.route('/callback', methods=['GET'])
+def _callback():
+    logger.info('/callback called')
     spotify_auth.request_token(request)
-    return render_template('index.html')
+    return render_template('mix.html')
 
 
-@app.route('/v1/auth', methods=['get'])
+@app.route('/v1/auth', methods=['GET'])
 def _auth():
     logger.info('/v1/auth called')
     return spotify_auth.auth_url()

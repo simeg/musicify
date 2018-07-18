@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import os
 import time
 from typing import Dict
 
@@ -13,6 +14,8 @@ from src.exceptions import SpotifyConnectionError
 
 logger = logging.getLogger(__name__)
 
+IS_PRODUCTION = bool(os.environ.get('IS_PRODUCTION', default=False))
+
 TEMP_STATE = 'TODO'
 FILE_PATH_TOKEN = "/tmp/spotify_token"
 
@@ -21,7 +24,7 @@ def auth_url():
     base_url = 'https://accounts.spotify.com/authorize'
     client_id = cfg.spotify_api()['client_id']
     redirect_uri = quote(
-        'http://0.0.0.0:8000/auth-callback')  # TODO: Fix for production
+        'http://0.0.0.0:8000/callback')  # TODO: Fix for production
     scope = 'user-read-private'  # TODO: Set correct scope
     state = TEMP_STATE  # TODO: Use localStorage? DB? MemCache?
 
@@ -42,7 +45,7 @@ def request_token(req):
     else:
         # Request is OK
         base_url = 'https://accounts.spotify.com/api/token'
-        redirect_uri = 'http://0.0.0.0:8000/auth-callback'  # TODO: Fix
+        redirect_uri = 'http://0.0.0.0:8000/callback'  # TODO: Fix
         code = req.args.get('code')
         payload = {
             'grant_type': 'authorization_code',
