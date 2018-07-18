@@ -31,9 +31,7 @@ serve:
 	python3 app.py
 
 test:
-	@echo "Not implemented yet"
-#	pushd test; pytest; popd
+	pushd test; pytest; popd
 
 test-cov:
-	@echo "Not implemented yet"
-#	pushd test; py.test --cov-report=html:../coverage --cov-report=term --no-cov-on-fail --cov src; popd
+	pushd test; py.test --cov-report=html:../coverage --cov-report=term --no-cov-on-fail --cov src; popd
