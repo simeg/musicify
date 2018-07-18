@@ -91,12 +91,11 @@ class SpotifyOAuth(object):
                'redirect_uri={}&' \
                'scope={}&' \
                'state={}' \
-            .format(
-            self.AUTHORIZE_URL,
-            self.client_id,
-            quote(self.redirect_uri),
-            self.scope,
-            self.state)
+            .format(self.AUTHORIZE_URL,
+                    self.client_id,
+                    quote(self.redirect_uri),
+                    self.scope,
+                    self.state)
 
     def get_new_token(self, req) -> Token:
         args = req.args
