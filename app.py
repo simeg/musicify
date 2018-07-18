@@ -32,7 +32,6 @@ def _index():
 def _login():
     spotify = _spotify_oauth()
     logger.info('/login called')
-    app.logger.info('/login called')
 
     cookie_token = request.cookies.get('spotify_token')
     if exists(cookie_token):
