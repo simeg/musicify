@@ -27,7 +27,12 @@ class SpotifyOAuth(object):
     JSONToken = str
     Scope = str or None
 
-    def __init__(self, client_id, client_secret, redirect_uri, state, scope):
+    def __init__(self,
+                 client_id: str,
+                 client_secret: str,
+                 redirect_uri: str,
+                 state: str,
+                 scope: str):
         """
             Creates a SpotifyOAuth object
             Parameters:
@@ -45,12 +50,12 @@ class SpotifyOAuth(object):
         self.scope = self._normalize_scope(scope)
 
     @staticmethod
-    def is_token_expired(token) -> bool:
+    def is_token_expired(token: Token) -> bool:
         now = int(time.time())
         return int(token['expires_at']) - now < 60
 
     @staticmethod
-    def json_to_cookie(json) -> JSONToken:
+    def json_to_cookie(json: Dict) -> JSONToken:
         return "{}|{}|{}".format(
             json['access_token'],
             json['refresh_token'],
@@ -58,7 +63,7 @@ class SpotifyOAuth(object):
         )
 
     @staticmethod
-    def cookie_to_dict(cookie) -> Token:
+    def cookie_to_dict(cookie: str) -> Token:
         split = cookie.split("|")
         return {
             'access_token': split[0],
@@ -67,21 +72,21 @@ class SpotifyOAuth(object):
         }
 
     @staticmethod
-    def _normalize_scope(scope) -> Scope:
+    def _normalize_scope(scope: str) -> Scope:
         if scope:
-            scopes = scope.split()
+            scopes = scope.split(" ")
             scopes.sort()
             return ' '.join(scopes)
         else:
             return None
 
     @staticmethod
-    def _decorate_with_expires_at(token) -> Token:
+    def _decorate_with_expires_at(token: Token) -> Token:
         """
         Add field to keep track of when
         token expires and should be refreshed
         """
-        token['expires_at'] = int(time.time()) + token['expires_in']
+        token['expires_at'] = int(time.time()) + int(token['expires_in'])
         return token
 
     def get_auth_url(self) -> str:
@@ -128,7 +133,7 @@ class SpotifyOAuth(object):
 
         return self._decorate_with_expires_at(response.json())
 
-    def refresh_token(self, token) -> Token:
+    def refresh_token(self, token: Token) -> Token:
         refresh_token = token['refresh_token']
         payload = {
             'grant_type': 'refresh_token',
