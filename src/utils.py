@@ -1,6 +1,7 @@
 ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ALLOWED_FILE_NAME = {'blob'}
 
+
 def allowed_file_type(filename: str) -> bool:
     if filename in ALLOWED_FILE_NAME:
         return True
