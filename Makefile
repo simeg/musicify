@@ -1,4 +1,4 @@
-.PHONY: ci build deploy deps serve start lint login test test-cov type-check
+.PHONY: ci build codecov deploy deps lint login start serve test test-cov
 
 # Travis cannot use 'pushd' or 'popd' without SHELL defined
 SHELL := /bin/bash
@@ -6,10 +6,13 @@ IMAGE_NAME = musicify
 
 SOURCE_FILES = $(shell find . -type f -name "*.py" -not -path "./test/*")
 
-ci: deps lint test
+ci: deps lint test codecov
 
 build:
 	docker build -t $(IMAGE_NAME):latest .
+
+codecov:
+	codecov
 
 deploy: lint test build login
 	heroku container:push web
