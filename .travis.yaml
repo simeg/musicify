@@ -1,0 +1,9 @@
+language: python
+sudo: false
+cache: pip
+python:
+  - 3.6
+  - 3.6-dev
+  - 3.7-dev
+  - nightly
+script: make ci
