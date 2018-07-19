@@ -19,7 +19,7 @@ class TestUtils(unittest.TestCase):
     @settings(max_examples=1)
     def test_allowed_file_type__fail(self, extension, name):
         file_name = "{}.{}".format(name, extension)
-        assert allowed_file_type(file_name) == False
+        assert allowed_file_type(file_name) is False
 
     @given(st.one_of(one_of_all_primitives()))
     def test_exists__pass(self, value):
@@ -28,7 +28,7 @@ class TestUtils(unittest.TestCase):
     @given(st.none())
     @settings(max_examples=1)
     def test_exists__fail(self, value):
-        assert exists(value) == False
+        assert exists(value) is False
 
 
 if __name__ == '__main__':
