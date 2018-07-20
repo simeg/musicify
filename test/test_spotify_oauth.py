@@ -54,12 +54,12 @@ class TestSpotifyOAuth(unittest.TestCase):
         expected = None
         assert actual == expected
 
-    @patch('time.time', mock_time())
-    def test_decorate_with_expires_at(self):
-        actual = SpotifyOAuth._decorate_with_expires_at(_make_fake_token())
-        expected = _make_fake_token()
-        expected['expires_at'] = 3063909918
-        assert actual == expected
+    # @patch('time.time', mock_time())
+    # def test_decorate_with_expires_at(self):
+    #     actual = SpotifyOAuth._decorate_with_expires_at(_make_fake_token())
+    #     expected = _make_fake_token()
+    #     expected['expires_at'] = 3063909918
+    #     assert actual == expected
 
     def test_get_auth_url(self):
         sp_oauth = _spotify_oauth(
