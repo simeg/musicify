@@ -1,4 +1,4 @@
-.PHONY: ci build deploy deps lint login start serve test test-ci test-coverage upload-coverage
+.PHONY: ci build deploy deps lint login start serve test test-coverage upload-coverage
 
 # Travis cannot use 'pushd' or 'popd' without SHELL defined
 SHELL := /bin/bash
@@ -30,8 +30,6 @@ serve:
 
 test:
 	python -m pytest
-
-test-ci: deps lint test
 
 test-coverage:
 	python -m pytest --cov=./src
