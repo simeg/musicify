@@ -34,7 +34,7 @@ serve:
 	python3 app.py
 
 test:
-	pushd test; pytest; popd
+	python -m pytest
 
 test-cov:
-	pushd test; py.test --cov-report=html:../coverage --cov-report=term --no-cov-on-fail --cov src; popd
+	python -m pytest --cov=./src
