@@ -16,6 +16,7 @@ jobs:
   include:
     - stage: lint
       script: make deps lint
+
     - stage: test
       script: make deps test
 

@@ -1,4 +1,4 @@
-.PHONY: ci build deploy deps lint login start serve test test-coverage upload-coverage
+.PHONY: build deploy deps lint login start serve test test-coverage upload-coverage
 
 # Travis cannot use 'pushd' or 'popd' without SHELL defined
 SHELL := /bin/bash
