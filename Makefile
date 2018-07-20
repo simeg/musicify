@@ -6,7 +6,7 @@ IMAGE_NAME = musicify
 
 SOURCE_FILES = $(shell find . -type f -name "*.py" -not -path "./test/*")
 
-ci: deps lint test codecov
+ci: deps lint test test-cov codecov
 
 build:
 	docker build -t $(IMAGE_NAME):latest .
