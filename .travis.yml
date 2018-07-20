@@ -5,8 +5,14 @@ python:
   - 3.6
   - 3.6-dev
   - 3.7-dev
-  - nightly
-script: make ci
+
+jobs:
+  include:
+    - stage: test
+      script: make test-ci
+
+    - stage: test coverage
+      script: make test-coverage upload-coverage
 
 notifications:
   email:
