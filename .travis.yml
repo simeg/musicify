@@ -6,10 +6,18 @@ python:
 #  - 3.6-dev
 #  - 3.7-dev
 
+stages:
+  - lint
+  - test
+  - name: test coverage
+    if: branch = master
+
 jobs:
   include:
+    - stage: lint
+      script: make deps lint
     - stage: test
-      script: make test-ci
+      script: make deps test
 
     - stage: test coverage
       script: make test-coverage upload-coverage
