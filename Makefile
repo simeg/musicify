@@ -34,5 +34,8 @@ test:
 test-coverage:
 	python -m pytest --cov=./src
 
+type-check:
+	mypy $(SOURCE_FILES)
+
 upload-coverage:
 	codecov
