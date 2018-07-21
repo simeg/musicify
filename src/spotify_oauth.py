@@ -4,7 +4,7 @@ import logging
 import os
 import requests
 import time
-from typing import Dict
+from typing import Dict, Union
 from urllib.parse import quote
 
 from src.exceptions import SpotifyOAuthError
@@ -25,7 +25,7 @@ class SpotifyOAuth(object):
     Token = Dict[str, str]
     Headers = Dict[str, str]
     JSONToken = str
-    Scope = str or None
+    Scope = Union[str, None]
 
     def __init__(self,
                  client_id: str,
