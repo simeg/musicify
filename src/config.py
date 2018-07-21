@@ -1,7 +1,7 @@
 import logging
 import os
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Union
 
 import yaml
 
@@ -10,7 +10,7 @@ IS_PRODUCTION = bool(os.environ.get('IS_PRODUCTION', default=False))
 
 config_path = "./src/config.yaml"
 
-Config = Dict[str, Any]
+Config = Union[Dict[str, Any], None]
 
 
 def spotify_api() -> Config:
@@ -27,6 +27,7 @@ def _get_config_key(key) -> Config:
         return config[key]
     else:
         logger.error("Key [%s] does not exist in config dict", key)
+        return None
 
 
 def _get_config() -> Config:
@@ -46,6 +47,9 @@ def _get_config() -> Config:
             if Path(config_path).exists():
                 with open(config_path) as file:
                     return yaml.load(file)
+            else:
+                return None
         except FileNotFoundError:
             logger.exception(
                 "Could not find configuration file at path=[%s]", config_path)
+            return None
