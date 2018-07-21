@@ -30,8 +30,8 @@ def _index():
 
 @app.route('/login', methods=['GET'])
 def _login():
-    sp = _spotify_oauth()
     logger.info('/login called')
+    sp = _spotify_oauth()
 
     cookie_token = _get_token(request)
     if exists(cookie_token):
@@ -58,8 +58,8 @@ def _login():
 
 @app.route('/callback', methods=['GET'])
 def _callback():
-    sp = _spotify_oauth()
     logger.info('/callback called')
+    sp = _spotify_oauth()
 
     token = sp.get_new_token(request)
 
