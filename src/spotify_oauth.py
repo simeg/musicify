@@ -22,7 +22,7 @@ class SpotifyOAuth(object):
     AUTHORIZE_URL = 'https://accounts.spotify.com/authorize'
     TOKEN_URL = 'https://accounts.spotify.com/api/token'
 
-    Token = Dict[str, str]
+    Token = Dict[str, Union[str, int]]
     Headers = Dict[str, str]
     JSONToken = str
     Scope = Union[str, None]
@@ -112,8 +112,8 @@ class SpotifyOAuth(object):
         elif args.get('state') != self.state:
             logger.error(
                 "Expected state to be: [%s] but was: [%s]" %
-                self.state,
-                str(args.get('state')))
+                (self.state, str(args.get('state')))
+            )
             raise SpotifyOAuthError("State mismatch")
         elif args.get('code') is None:
             raise SpotifyOAuthError("Code query param missing")
