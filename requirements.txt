@@ -6,3 +6,4 @@ gunicorn
 newrelic
 hypothesis
 codecov
+mypy
