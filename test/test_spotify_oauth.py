@@ -1,8 +1,6 @@
 import unittest
-from unittest.mock import patch
 
 from src.spotify_oauth import SpotifyOAuth
-from test.utils import mock_time
 
 
 def _make_fake_token(expires_at=1531958718, expires_in=1531958718):
