@@ -57,8 +57,8 @@ class EmotionClient(object):
         Trivial way of saying if the strongest
         emotion is a happy emotion or not
         """
-        strongest_emotion = max(emotions.items(), key=operator.itemgetter(1))[
-            0]
+        strongest_emotion = max(emotions.items(),
+                                key=operator.itemgetter(1))[0]
         if strongest_emotion == "happiness" or \
                 strongest_emotion == "neutral" or \
                 strongest_emotion == "surprise":
