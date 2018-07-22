@@ -3,7 +3,7 @@ from random import randint
 from typing import Any, Dict, Set, Union
 from flask import abort
 
-from src.emotion_client import is_happy, Emotions
+from src.emotion_client import Emotions, EmotionClient
 from src.genres import get_random_genre
 
 logger = logging.getLogger(__name__)
@@ -26,6 +26,15 @@ class SpotifyClient(object):
     A wrapper for speaking to the Spotify Web API.
     """
 
+    def __init__(self, emotion_client: EmotionClient):
+        """
+            Creates a SpotifyClient object
+            Parameters:
+                 - emotion_client - the emotion client instance
+        """
+
+        self.emotion_client = emotion_client
+
     @staticmethod
     def _get_uri(track: Track) -> Uri:
         return {
@@ -41,8 +50,7 @@ class SpotifyClient(object):
         if not emotions:
             abort(400, "No emotions dict sent")  # Bad request
 
-    @staticmethod
-    def _build_seed(emotions: Emotions) -> Seed:
+    def _build_seed(self, emotions: Emotions) -> Seed:
         seed = {
             # Do not include tracks with only spoken word
             "max_speechiness": 0.66,
@@ -53,7 +61,7 @@ class SpotifyClient(object):
 
         valence_diff = randint(1, 5)
 
-        if is_happy(emotions):
+        if self.emotion_client.is_happy(emotions):
             seed["target_mode"] = 1  # Major modality
             seed["target_valence"] = (5 + valence_diff) / 10
         else:

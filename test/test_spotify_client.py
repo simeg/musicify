@@ -1,11 +1,15 @@
 import unittest
-from unittest.mock import patch
 import hypothesis.strategies as st
 from hypothesis.strategies import text
-from hypothesis import given, example, settings
-from werkzeug.exceptions import HTTPException, BadRequest, abort
+from hypothesis import given
+from werkzeug.exceptions import BadRequest
 
+from src.emotion_client import EmotionClient
 from src.spotify_client import SpotifyClient, Track
+
+
+def _spotify_client():
+    return SpotifyClient(EmotionClient("irrelevant-sub-key"))
 
 
 class TestSpotifyOAuth(unittest.TestCase):
@@ -57,12 +61,14 @@ class TestSpotifyOAuth(unittest.TestCase):
 
     def test_build_seed__happy_emotions__major_modality(self):
         emotions = {"happiness": 1, "sadness": 0.9}
-        seed = SpotifyClient._build_seed(emotions)
+        sp_client = _spotify_client()
+        seed = sp_client._build_seed(emotions)
         assert seed["target_mode"] == 1
 
     def test_build_seed__sad_emotions__minor_modality(self):
         emotions = {"happiness": 0.9, "sadness": 1}
-        seed = SpotifyClient._build_seed(emotions)
+        sp_client = _spotify_client()
+        seed = sp_client._build_seed(emotions)
         assert seed["target_mode"] == 0
 
     def test_slim_response(self):
@@ -75,7 +81,7 @@ class TestSpotifyOAuth(unittest.TestCase):
         full_response = {
             "tracks": tracks
         }
-        sp_client = SpotifyClient()
+        sp_client = _spotify_client()
         actual = sp_client._slim_response(full_response)
         expected = {
             "count": 3,

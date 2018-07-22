@@ -1,10 +1,8 @@
 import logging
 import operator
+import requests
 from typing import Dict
 
-import requests
-
-from src import config as cfg
 from src.exceptions import EmotionAPIConnectionError, EmotionAPIResponseError
 
 logger = logging.getLogger(__name__)
@@ -12,41 +10,58 @@ logger = logging.getLogger(__name__)
 Emotions = Dict[str, float]
 
 
-def get_emotions(image) -> Emotions:
-    logger.info("Will try to fetch emotions for image")
+class EmotionClient(object):
+    """
+    A wrapper for speaking to the Microsoft Face Cognitive API.
+    """
 
-    url = 'https://northeurope.api.cognitive.microsoft.com/face/v1.0' \
-          '/detect?returnFaceAttributes=emotion'
-    headers = {
-        "Content-Type": "application/octet-stream",
-        'Ocp-Apim-Subscription-Key': cfg.face_api()['subscription_key'],
-    }
+    def __init__(self, subscription_key: str):
+        """
+            Creates a EmotionClient object
+            Parameters:
+                 - subscription_key - the subscription key to the API
+        """
 
-    response = requests.post(url, headers=headers, data=image)
-    if response.status_code != 200:
-        raise EmotionAPIConnectionError(response.reason)
+        self.subscription_key = subscription_key
 
-    json = response.json()
-    if not json:  # If no face found, an empty array is returned
-        raise EmotionAPIResponseError("Could not find a face in the image")
+    def get_emotions(self, image) -> Emotions:
+        logger.info("Will try to fetch emotions for image")
 
-    if len(json) > 1:
-        logger.info(
-            "Found more than one face in the image, choosing the first one")
+        url = 'https://northeurope.api.cognitive.microsoft.com/face/v1.0' \
+              '/detect?returnFaceAttributes=emotion'
+        headers = {
+            "Content-Type": "application/octet-stream",
+            'Ocp-Apim-Subscription-Key': self.subscription_key,
+        }
 
-    face_emotions = json[0].get('faceAttributes').get('emotion')
+        response = requests.post(url, headers=headers, data=image)
+        if response.status_code != 200:
+            raise EmotionAPIConnectionError(response.reason)
 
-    logger.info("Successfully fetched emotions for image")
-    return face_emotions
+        json = response.json()
+        if not json:  # If no face found, an empty array is returned
+            raise EmotionAPIResponseError("Could not find a face in the image")
 
+        if len(json) > 1:
+            logger.warning(
+                "Found more than one face in the image,"
+                " choosing the first one")
 
-def is_happy(emotions: Emotions) -> bool:
-    """Slimmed down way of saying if the strongest emotion
-       is a happy emotion or not"""
-    strongest_emotion = max(emotions.items(), key=operator.itemgetter(1))[0]
-    if strongest_emotion == "happiness" or \
-            strongest_emotion == "neutral" or \
-            strongest_emotion == "surprise":
-        return True
+        face_emotions = json[0].get('faceAttributes').get('emotion')
 
-    return False
+        logger.info("Successfully fetched emotions for image")
+        return face_emotions
+
+    def is_happy(self, emotions: Emotions) -> bool:
+        """
+        Trivial way of saying if the strongest
+        emotion is a happy emotion or not
+        """
+        strongest_emotion = max(emotions.items(), key=operator.itemgetter(1))[
+            0]
+        if strongest_emotion == "happiness" or \
+                strongest_emotion == "neutral" or \
+                strongest_emotion == "surprise":
+            return True
+
+        return False
