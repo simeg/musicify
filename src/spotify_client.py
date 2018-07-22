@@ -1,6 +1,6 @@
 import logging
 from random import randint
-from typing import Any, Dict, Set
+from typing import Any, Dict, Set, Union
 from flask import abort
 
 from src.emotion_client import is_happy, Emotions
@@ -8,28 +8,28 @@ from src.genres import get_random_genre
 
 logger = logging.getLogger(__name__)
 
+Track = Dict[str, Any]
+Tracks = Set[Track]
+
+Uri = Dict[str, str]
+Uris = Set[Uri]
+Count = int
+
+SpotifyResponse = Dict[str, Any]
+SlimResponse = Dict[str, Union[Count, Uri]]
+
+Seed = Dict[str, Union[str, float]]
+
 
 class SpotifyClient(object):
     """
     A wrapper for speaking to the Spotify Web API.
     """
 
-    Track = (str, Any)
-    Tracks = Dict[Track]
-
-    Uri = [str, str]
-    Uris = Set[Dict[Uri]]
-    Count = [str, int]
-
-    SpotifyResponse = Dict[str, Any]
-    SlimResponse = Dict[Count, Uris]
-
-    Seed = Dict[str, Any]
-
     @staticmethod
     def _get_uri(track: Track) -> Uri:
         return {
-            "uri": track["uri"]
+            "uri": str(track["uri"])
         }
 
     @staticmethod
@@ -69,7 +69,7 @@ class SpotifyClient(object):
         """
 
         tracks = response["tracks"]
-        track_uris = set(map(self._get_uri, tracks))
+        track_uris = list(map(self._get_uri, tracks))
         return {
             "count": int(len(tracks)),
             "uris": track_uris,
