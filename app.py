@@ -127,7 +127,9 @@ def _get_token(request) -> str:
 
 def _spotify_oauth() -> SpotifyOAuth:
     c = cfg.spotify_api()
-    redirect_uri = 'TODO' if IS_PRODUCTION else 'http://0.0.0.0:8000/callback'
+    redirect_uri = '%s/callback' % \
+                   ('https://musicify.herokuapp.com' if IS_PRODUCTION
+                    else 'http://0.0.0.0:8000')
     state = 'TODO'
     scope = 'user-read-private'
     return SpotifyOAuth(
