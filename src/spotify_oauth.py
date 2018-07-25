@@ -104,8 +104,8 @@ class SpotifyOAuth(object):
                     self.scope,
                     self.state)
 
-    def get_new_token(self, req) -> Token:
-        args = req.args
+    def get_new_token(self, request) -> Token:
+        args = request.args
 
         if args.get('error') is not None:
             logger.error(
