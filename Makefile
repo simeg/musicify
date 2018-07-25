@@ -10,8 +10,8 @@ build:
 	docker build -t $(IMAGE_NAME):latest .
 
 deploy: lint test build login
-	heroku container:push web
-	heroku container:release web
+	heroku container:push web --app=musicify
+	heroku container:release web --app=musicify
 
 deps:
 	pip install -r requirements.txt
