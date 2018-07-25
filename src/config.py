@@ -1,9 +1,8 @@
 import logging
 import os
+import yaml
 from pathlib import Path
 from typing import Dict, Any, Union
-
-import yaml
 
 logger = logging.getLogger(__name__)
 IS_PRODUCTION = bool(os.environ.get('IS_PRODUCTION', default=False))

@@ -7,3 +7,4 @@ newrelic
 hypothesis
 codecov
 mypy
+pyyaml
