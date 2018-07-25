@@ -35,3 +35,21 @@ class dot_notiation(object):
 
     def __init__(self, d):
         self.__dict__ = d
+
+
+def mock_requester(status_code, json):
+    class MockRequester:
+        def __init__(self, status_code, json):
+            self.status_code = status_code
+            self.json = json
+
+        def post(self, *args, **kwargs):
+            def json():
+                return {'expires_in': 10, **self.json}
+
+            return dot_notiation({
+                'status_code': self.status_code,
+                'json': json
+            })
+
+    return MockRequester(status_code, json)
