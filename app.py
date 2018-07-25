@@ -1,5 +1,6 @@
 import logging
 import os
+import requests
 
 from flask import \
     Flask, \
@@ -133,6 +134,7 @@ def _spotify_oauth() -> SpotifyOAuth:
     state = 'TODO'
     scope = 'user-read-private'
     return SpotifyOAuth(
+        requests,
         client_id=c['client_id'],
         client_secret=c['client_secret'],
         redirect_uri=redirect_uri,

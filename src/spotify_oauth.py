@@ -2,7 +2,6 @@ import base64
 import json
 import logging
 import os
-import requests
 import time
 from typing import Dict, Union
 from urllib.parse import quote
@@ -28,6 +27,7 @@ class SpotifyOAuth(object):
     Scope = Union[str, None]
 
     def __init__(self,
+                 requester,
                  client_id: str,
                  client_secret: str,
                  redirect_uri: str,
@@ -36,6 +36,7 @@ class SpotifyOAuth(object):
         """
             Creates a SpotifyOAuth object
             Parameters:
+                 - requester - the object to make HTTP requests
                  - client_id - the client id of your app
                  - client_secret - the client secret of your app
                  - redirect_uri - the redirect URI of your app
@@ -43,6 +44,7 @@ class SpotifyOAuth(object):
                  - scope - the desired scope of the request
         """
 
+        self.requester = requester
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
@@ -125,8 +127,8 @@ class SpotifyOAuth(object):
             'code': str(code),
             'redirect_uri': self.redirect_uri,
         }
-        response = requests.post(self.TOKEN_URL, data=payload,
-                                 headers=self._get_headers())
+        response = self.requester.post(self.TOKEN_URL, data=payload,
+                                       headers=self._get_headers())
 
         if response.status_code != 200:
             raise SpotifyOAuthError(response.reason)
@@ -139,8 +141,8 @@ class SpotifyOAuth(object):
             'grant_type': 'refresh_token',
             'refresh_token': str(refresh_token)
         }
-        response = requests.post(self.TOKEN_URL, data=payload,
-                                 headers=self._get_headers())
+        response = self.requester.post(self.TOKEN_URL, data=payload,
+                                       headers=self._get_headers())
 
         if response.status_code != 200:
             raise SpotifyOAuthError(response.reason)
@@ -163,7 +165,8 @@ class SpotifyOAuth(object):
         payload = {'grant_type': 'client_credentials'}
         headers = {'Authorization': self._get_auth_header_value()}
 
-        response = requests.post(self.TOKEN_URL, data=payload, headers=headers)
+        response = self.requester.post(self.TOKEN_URL, data=payload,
+                                       headers=headers)
         if response.status_code != 200:
             raise SpotifyOAuthError(response.reason)
 
