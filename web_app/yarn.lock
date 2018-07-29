@@ -1293,7 +1293,7 @@ boom@2.x.x:
   dependencies:
     hoek "2.x.x"
 
-bootstrap@^4.1.3:
+bootstrap@4.1.3:
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-4.1.3.tgz#0eb371af2c8448e8c210411d0cb824a6409a12be"
 
@@ -1437,6 +1437,10 @@ bs-loader@^2.0.3:
 bs-platform@4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-4.0.2.tgz#ee80f4948f5db0533df667612a53d9a52837cf24"
+
+bs-webapi@0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/bs-webapi/-/bs-webapi-0.10.0.tgz#2fd08783c1bf184817a7dd37f457ddd5449eb6fc"
 
 bsb-js@^1.0.0:
   version "1.1.6"
@@ -4594,7 +4598,7 @@ jest@^22.0.4:
     import-local "^1.0.0"
     jest-cli "^22.4.4"
 
-jquery@^3.3.1:
+jquery@3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
 
@@ -5760,7 +5764,7 @@ pn@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/pn/-/pn-1.1.0.tgz#e2f4cef0e219f463c179ab37463e4e1ecdccbafb"
 
-popper.js@^1.14.3:
+popper.js@1.14.3:
   version "1.14.3"
   resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.3.tgz#1438f98d046acf7b4d78cd502bf418ac64d4f095"
 
