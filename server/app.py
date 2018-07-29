@@ -146,4 +146,4 @@ def _spotify_oauth() -> SpotifyOAuth:
 if __name__ == '__main__':
     # Flask server is only used during development
     if not IS_PRODUCTION:
-        app.run(debug=True, host='0.0.0.0', port=8000)
+        app.run(debug=True, host='localhost', port=8000)
