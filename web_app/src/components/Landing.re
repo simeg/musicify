@@ -8,6 +8,8 @@
 
 let component = ReasonReact.statelessComponent("Landing");
 
+let go_to_mix_page = _evt => Router.push("/mix");
+
 let make = _children => {
   ...component,
   render: _self =>
@@ -18,7 +20,7 @@ let make = _children => {
           <div className="container">
             <h1 className="masthead-heading mb-0"> (ReasonReact.string("Musicify")) </h1>
             <h2 className="masthead-subheading mb-0" />
-            <a href="#" className="btn btn-primary btn-xl rounded-pill mt-5" id="btn-start">
+            <a className="btn btn-primary btn-xl rounded-pill mt-5" id="btn-start" onClick=go_to_mix_page>
               (ReasonReact.string(" Start"))
             </a>
           </div>
