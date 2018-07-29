@@ -32,10 +32,10 @@ serve:
 	@$(YARN) start
 
 test-ci:
-	CI=true $(REACT_SCRIPTS) test
+	@CI=true $(REACT_SCRIPTS) test
 
 test:
-	$(REACT_SCRIPTS) test
+	@$(REACT_SCRIPTS) test
 
 verify-deps:
-	$(YARN) check --integrity
+	@$(YARN) check --integrity
