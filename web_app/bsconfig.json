@@ -2,7 +2,8 @@
   "name": "reason-scripts",
   "sources": [
     "src",
-    "src/components"
+    "src/components",
+    "src/utils"
   ],
   "bs-dependencies": [
     "reason-react",
