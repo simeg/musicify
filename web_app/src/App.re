@@ -1,3 +1,5 @@
+open Router;
+
 type reactElement = ReasonReact.reactElement;
 
 type action =
