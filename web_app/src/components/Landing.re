@@ -1,3 +1,5 @@
+[%bs.raw {|require('../../node_modules/bootstrap/dist/css/bootstrap.min.css')|}];
+[%bs.raw {|require('../../node_modules/bootstrap/dist/css/bootstrap-grid.min.css')|}];
 [%bs.raw {|require('./landing.css')|}];
 
 [@bs.module] external img1: string = "../img/01.jpg";
