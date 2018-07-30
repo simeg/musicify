@@ -18,9 +18,11 @@ deps:
 
 lint:
 	@pycodestyle --format=pylint src test app.py
+	@echo "Lint: OK 👌"
 
 login:
 	@heroku container:login
+	@echo "Login: OK 👌"
 
 start:
 	@docker run -p 8000:8000 --restart=always $(IMAGE_NAME):latest
@@ -30,12 +32,15 @@ serve:
 
 test:
 	@python -m pytest test
+	@echo "Tests: OK 👌"
 
 test-coverage:
 	@python -m pytest --cov=./src
 
 type-check:
 	@mypy $(SOURCE_FILES)
+	@echo "Type Check: OK 👌"
 
 upload-coverage:
 	@codecov
+	@echo "Coverage Upload: OK 👌"
