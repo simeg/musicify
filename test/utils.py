@@ -41,13 +41,14 @@ class DotNotation(object):
         self.__dict__ = _dict
 
 
-def mock_requester(status_code, json):
+def mock_requester(status_code, json, reason=None):
     expires_in_ms = 10
 
     class MockRequester:
-        def __init__(self, _status_code, _json):
+        def __init__(self, _status_code, _json, _reason=None):
             self.status_code = _status_code
             self.json = _json
+            self.reason = _reason
 
         def post(self, *args, **kwargs):
             def __json():
@@ -55,7 +56,8 @@ def mock_requester(status_code, json):
 
             return DotNotation({
                 'status_code': self.status_code,
-                'json': __json
+                'json': __json,
+                'reason': reason
             })
 
     return MockRequester(status_code, json)

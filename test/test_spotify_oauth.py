@@ -147,6 +147,18 @@ class TestSpotifyOAuth(unittest.TestCase):
             assert e is not None
             assert get_exception_msg(e) == "Code query param missing"
 
+    @freeze_time("2012-01-14")
+    def test_get_new_token__failure_invalid_response(self):
+        try:
+            requester = mock_requester(400, {}, reason='specific-reason')
+            sp = _spotify_oauth(requester=requester, state="specific-state")
+            _actual = sp.get_new_token(
+                DotNotation({'args': {'state': 'specific-state',
+                                      'code': 'arbitrary-code'}}))
+        except SpotifyOAuthError as e:
+            assert e is not None
+            assert get_exception_msg(e) == "specific-reason"
+
 
 if __name__ == '__main__':
     unittest.main()
