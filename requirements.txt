@@ -8,3 +8,4 @@ hypothesis
 codecov
 mypy
 pyyaml
+freezegun
