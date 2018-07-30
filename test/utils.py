@@ -1,8 +1,8 @@
 import time
+import hypothesis.strategies as st
+
 from datetime import datetime
 from unittest.mock import Mock
-
-import hypothesis.strategies as st
 
 
 def one_of_all_primitives(additional_type=None):
@@ -27,29 +27,29 @@ def mock_time():
     return mock
 
 
-class dot_notiation(object):
+class DotNotation(object):
     """
     A class used as a function to pass in dicts to make
     their attributes available using a dot notation
     """
 
-    def __init__(self, d):
-        self.__dict__ = d
+    def __init__(self, _dict):
+        self.__dict__ = _dict
 
 
 def mock_requester(status_code, json):
     class MockRequester:
-        def __init__(self, status_code, json):
-            self.status_code = status_code
-            self.json = json
+        def __init__(self, _status_code, _json):
+            self.status_code = _status_code
+            self.json = _json
 
         def post(self, *args, **kwargs):
-            def json():
+            def __json():
                 return {'expires_in': 10, **self.json}
 
-            return dot_notiation({
+            return DotNotation({
                 'status_code': self.status_code,
-                'json': json
+                'json': __json
             })
 
     return MockRequester(status_code, json)
