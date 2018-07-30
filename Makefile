@@ -29,7 +29,7 @@ serve:
 	@python3 app.py
 
 test:
-	@python -m pytest
+	@python -m pytest test
 
 test-coverage:
 	@python -m pytest --cov=./src
