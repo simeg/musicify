@@ -1,6 +1,9 @@
 import unittest
 
+from freezegun import freeze_time
+
 from src.spotify_oauth import SpotifyOAuth
+from test.utils import DotNotation, mock_requester
 
 
 def _make_fake_token(expires_at=1531958718, expires_in=1531958718):
@@ -14,13 +17,21 @@ def _make_fake_token(expires_at=1531958718, expires_in=1531958718):
 
 
 def _spotify_oauth(
+        requester=None,
         client_id="arbitrary-client_id",
         client_secret="arbitrary-client_secret",
         redirect_uri="arbitrary-redirect_uri",
         state="arbitrary-state",
         scope="arbitrary-scope"
 ):
-    return SpotifyOAuth(client_id, client_secret, redirect_uri, state, scope)
+    return SpotifyOAuth(
+        requester,
+        client_id,
+        client_secret,
+        redirect_uri,
+        state,
+        scope
+    )
 
 
 class TestSpotifyOAuth(unittest.TestCase):
@@ -94,6 +105,16 @@ class TestSpotifyOAuth(unittest.TestCase):
             'Content-Type': 'application/x-www-form-urlencoded'
         }
         assert actual == expected
+
+    @freeze_time("2012-01-14")
+    def test_get_new_token__success(self):
+        requester = mock_requester(200, {'specific-key': 'specific-value'})
+        sp = _spotify_oauth(requester=requester, state="specific-state")
+        actual = sp.get_new_token(
+            DotNotation({'args': {'state': 'specific-state',
+                                  'code': 'arbitrary-code'}}))
+        assert actual == {'expires_in': 10, 'specific-key': 'specific-value',
+                          'expires_at': 1326499210}
 
 
 if __name__ == '__main__':

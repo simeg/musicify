@@ -38,6 +38,8 @@ class DotNotation(object):
 
 
 def mock_requester(status_code, json):
+    expires_in_ms = 10
+
     class MockRequester:
         def __init__(self, _status_code, _json):
             self.status_code = _status_code
@@ -45,7 +47,7 @@ def mock_requester(status_code, json):
 
         def post(self, *args, **kwargs):
             def __json():
-                return {'expires_in': 10, **self.json}
+                return {'expires_in': expires_in_ms, **self.json}
 
             return DotNotation({
                 'status_code': self.status_code,
