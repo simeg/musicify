@@ -27,6 +27,10 @@ def mock_time():
     return mock
 
 
+def get_exception_msg(exception) -> str:
+    return exception.args[0]
+
+
 class DotNotation(object):
     """
     A class used as a function to pass in dicts to make
