@@ -2,8 +2,9 @@ import unittest
 
 from freezegun import freeze_time
 
+from src.exceptions import SpotifyOAuthError
 from src.spotify_oauth import SpotifyOAuth
-from test.utils import DotNotation, mock_requester
+from test.utils import DotNotation, mock_requester, get_exception_msg
 
 
 def _make_fake_token(expires_at=1531958718, expires_in=1531958718):
@@ -115,6 +116,36 @@ class TestSpotifyOAuth(unittest.TestCase):
                                   'code': 'arbitrary-code'}}))
         assert actual == {'expires_in': 10, 'specific-key': 'specific-value',
                           'expires_at': 1326499210}
+
+    def test_get_new_token__failure__when_error(self):
+        try:
+            requester = mock_requester(500, {})
+            sp = _spotify_oauth(requester=requester)
+            _actual = sp.get_new_token(
+                DotNotation({'args': {'error': 'arbitrary-value'}}))
+        except SpotifyOAuthError as e:
+            assert e is not None
+            assert get_exception_msg(e) == "Could not authorize user"
+
+    def test_get_new_token__failure__when_state_mismatch(self):
+        try:
+            requester = mock_requester(500, {})
+            sp = _spotify_oauth(requester=requester)
+            _actual = sp.get_new_token(
+                DotNotation({'args': {'state': 'invalid-state-value'}}))
+        except SpotifyOAuthError as e:
+            assert e is not None
+            assert get_exception_msg(e) == "State mismatch"
+
+    def test_get_new_token__failure__when_no_code(self):
+        try:
+            requester = mock_requester(500, {})
+            sp = _spotify_oauth(requester=requester, state='specific-state')
+            _actual = sp.get_new_token(DotNotation(
+                {'args': {'code': None, 'state': 'specific-state'}}))
+        except SpotifyOAuthError as e:
+            assert e is not None
+            assert get_exception_msg(e) == "Code query param missing"
 
 
 if __name__ == '__main__':
