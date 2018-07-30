@@ -161,16 +161,16 @@ class SpotifyOAuth(object):
         b64_auth_str = base64.urlsafe_b64encode(auth_str.encode()).decode()
         return 'Basic {}'.format(b64_auth_str)
 
-    def legacy_request_auth_token(self) -> Token:
-        payload = {'grant_type': 'client_credentials'}
-        headers = {'Authorization': self._get_auth_header_value()}
-
-        response = self.requester.post(self.TOKEN_URL, data=payload,
-                                       headers=headers)
-        if response.status_code != 200:
-            raise SpotifyOAuthError(response.reason)
-
-        response_data = json.loads(response.text)
-        access_token = response_data['access_token']
-
-        return {'Authorization': 'Bearer {}'.format(access_token)}
+    # def legacy_request_auth_token(self) -> Token:
+    #     payload = {'grant_type': 'client_credentials'}
+    #     headers = {'Authorization': self._get_auth_header_value()}
+    #
+    #     response = self.requester.post(self.TOKEN_URL, data=payload,
+    #                                    headers=headers)
+    #     if response.status_code != 200:
+    #         raise SpotifyOAuthError(response.reason)
+    #
+    #     response_data = json.loads(response.text)
+    #     access_token = response_data['access_token']
+    #
+    #     return {'Authorization': 'Bearer {}'.format(access_token)}
