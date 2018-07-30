@@ -122,8 +122,8 @@ def _handle_error(error):
 # TODO: Move these to util file,
 # this file should be clean
 
-def _get_token(request) -> str:
-    return request.cookies.get('spotify_token')
+def _get_token(req) -> str:
+    return req.cookies.get('spotify_token')
 
 
 def _spotify_oauth() -> SpotifyOAuth:
@@ -134,7 +134,7 @@ def _spotify_oauth() -> SpotifyOAuth:
     state = 'TODO'
     scope = 'user-read-private'
     return SpotifyOAuth(
-        requests,
+        requests,  # Pass in the external library
         client_id=c['client_id'],
         client_secret=c['client_secret'],
         redirect_uri=redirect_uri,
