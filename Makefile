@@ -31,14 +31,19 @@ serve:
 	@python3 server/app.py
 
 test:
-	@pushd server; python -m pytest test && echo "Tests: OK 👌"; popd
+	@python -m pytest server/test
+	@echo "Tests: OK 👌"
 
 test-coverage:
-	@pushd server; python -m pytest --cov=./src && echo "Tests: OK 👌"; popd
+	@python -m pytest --cov=server/src
+	@echo "Tests: OK 👌"
 
 type-check:
 	@mypy $(SOURCE_FILES)
 	@echo "Type Check: OK 👌"
 
 upload-coverage:
-	@pushd server; codecov && echo "Coverage Upload: OK 👌"; popd
+	@pushd server &&
+	   codecov &&
+	     echo "Coverage Upload: OK 👌"
+	       && popd
