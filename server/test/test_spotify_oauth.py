@@ -2,9 +2,9 @@ import unittest
 
 from freezegun import freeze_time
 
-from src.exceptions import SpotifyOAuthError
-from src.spotify_oauth import SpotifyOAuth
-from test.utils import DotNotation, mock_requester, get_exception_msg
+from exceptions import SpotifyOAuthError
+from spotify_oauth import SpotifyOAuth
+from server.test.utils import DotNotation, mock_requester, get_exception_msg
 
 
 def _make_fake_token(expires_at=1531958718, expires_in=1531958718):

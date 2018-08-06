@@ -4,8 +4,8 @@ from hypothesis.strategies import text
 from hypothesis import given
 from werkzeug.exceptions import BadRequest
 
-from src.emotion_client import EmotionClient
-from src.spotify_client import SpotifyClient, Track
+from emotion_client import EmotionClient
+from spotify_client import SpotifyClient, Track
 
 
 def _spotify_client():
