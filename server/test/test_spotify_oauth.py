@@ -8,14 +8,19 @@ from src.spotify_oauth import SpotifyOAuth
 from .utils import DotNotation, mock_requester, get_exception_msg
 
 
-def _make_fake_token(expires_at=1531958718, expires_in=1531958718):
+def _fake_token(expires_at=1531958718,
+                expires_in=1531958718,
+                scope="specific-scope",
+                token_type="specific-token_type",
+                refresh_token="specific-refresh_token",
+                access_token="specific-access_token") -> SpotifyOAuth.Token:
     return dict(
         expires_at=expires_at,
         expires_in=expires_in,
-        scope="specific-scope",
-        token_type="specific-token_type",
-        refresh_token="specific-refresh_token",
-        access_token="specific-access_token")
+        scope=scope,
+        token_type=token_type,
+        refresh_token=refresh_token,
+        access_token=access_token)
 
 
 def _spotify_oauth(
@@ -25,7 +30,7 @@ def _spotify_oauth(
         redirect_uri="arbitrary-redirect_uri",
         state="arbitrary-state",
         scope="arbitrary-scope"
-):
+) -> SpotifyOAuth:
     return SpotifyOAuth(
         requester,
         client_id,
@@ -57,7 +62,7 @@ class TestSpotifyOAuth(unittest.TestCase):
         assert not result
 
     def test_json_to_cookie(self):
-        actual = SpotifyOAuth.json_to_cookie(_make_fake_token())
+        actual = SpotifyOAuth.json_to_cookie(_fake_token())
         expected = "specific-access_token|specific-refresh_token|1531958718"
         assert actual == expected
 
@@ -135,14 +140,15 @@ class TestSpotifyOAuth(unittest.TestCase):
         actual = sp.get_new_token(
             DotNotation({'args': {'state': 'specific-state',
                                   'code': 'arbitrary-code'}}))
-        assert actual == {'expires_in': 10, 'specific-key': 'specific-value',
-                          'expires_at': 1326499210}
+        expected = {'expires_in': 10, 'specific-key': 'specific-value',
+                    'expires_at': 1326499210}
+        assert actual == expected
 
     def test_get_new_token__failure__when_error(self):
         try:
             requester = mock_requester(500, {})
             sp = _spotify_oauth(requester=requester)
-            _actual = sp.get_new_token(
+            _ = sp.get_new_token(
                 DotNotation({'args': {'error': 'arbitrary-value'}}))
         except SpotifyOAuthError as e:
             assert e is not None
@@ -152,7 +158,7 @@ class TestSpotifyOAuth(unittest.TestCase):
         try:
             requester = mock_requester(500, {})
             sp = _spotify_oauth(requester=requester)
-            _actual = sp.get_new_token(
+            _ = sp.get_new_token(
                 DotNotation({'args': {'state': 'invalid-state-value'}}))
         except SpotifyOAuthError as e:
             assert e is not None
@@ -162,20 +168,46 @@ class TestSpotifyOAuth(unittest.TestCase):
         try:
             requester = mock_requester(500, {})
             sp = _spotify_oauth(requester=requester, state='specific-state')
-            _actual = sp.get_new_token(DotNotation(
+            _ = sp.get_new_token(DotNotation(
                 {'args': {'code': None, 'state': 'specific-state'}}))
         except SpotifyOAuthError as e:
             assert e is not None
             assert get_exception_msg(e) == "Code query param missing"
 
     @freeze_time("2012-01-14")
-    def test_get_new_token__failure_invalid_response(self):
+    def test_get_new_token__failure__when_invalid_response(self):
         try:
             requester = mock_requester(400, {}, reason='specific-reason')
             sp = _spotify_oauth(requester=requester, state="specific-state")
-            _actual = sp.get_new_token(
+            _ = sp.get_new_token(
                 DotNotation({'args': {'state': 'specific-state',
                                       'code': 'arbitrary-code'}}))
+        except SpotifyOAuthError as e:
+            assert e is not None
+            assert get_exception_msg(e) == "specific-reason"
+
+    @freeze_time("2012-01-14 12:00:00")
+    def test_refresh_token__success(self):
+        requester = mock_requester(200, {'expires_in': 1})
+        sp = _spotify_oauth(requester=requester)
+        actual = sp.refresh_token(_fake_token(expires_in=1))
+        expected = {'expires_in': 1, 'expires_at': 1326542401}
+        assert actual == expected
+
+    def test_refresh_token__failure__when_no_refresh_token(self):
+        try:
+            requester = mock_requester(500, {})
+            sp = _spotify_oauth(requester=requester)
+            _ = sp.refresh_token(_fake_token(refresh_token=None))
+        except SpotifyOAuthError as e:
+            assert e is not None
+            assert get_exception_msg(e) == "Invalid token"
+
+    def test_refresh_token__failure__when_invalid_response(self):
+        try:
+            requester = mock_requester(400, {}, reason='specific-reason')
+            sp = _spotify_oauth(requester=requester)
+            _ = sp.refresh_token(_fake_token())
         except SpotifyOAuthError as e:
             assert e is not None
             assert get_exception_msg(e) == "specific-reason"
