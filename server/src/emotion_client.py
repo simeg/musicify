@@ -52,6 +52,8 @@ class EmotionClient(object):
             'Ocp-Apim-Subscription-Key': self.subscription_key,
         }
 
+        logger.info("Fetching emotions for image")
+
         response = self.requester.post(self.EMOTIONS_API_URL, headers=headers,
                                        data=image)
 
