@@ -6,7 +6,7 @@ from src.emotion_client import EmotionClient
 class TestEmotionClient(unittest.TestCase):
 
     def test_is_happy__true(self):
-        e_client = EmotionClient("irrelevant-sub-key")
+        e_client = EmotionClient(None, "irrelevant-sub-key")
         emotions = {
             "happiness": 1,
             "neutral": 0.5,
