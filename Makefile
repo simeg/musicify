@@ -36,7 +36,7 @@ test:
 
 test-coverage:
 	@python -m pytest --cov=server/src
-	@echo "Tests: OK 👌"
+	@echo "Test Coverage: OK 👌"
 
 type-check:
 	@mypy $(SOURCE_FILES)
