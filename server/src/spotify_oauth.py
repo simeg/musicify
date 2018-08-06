@@ -126,13 +126,19 @@ class SpotifyOAuth(object):
             'code': str(code),
             'redirect_uri': self.redirect_uri,
         }
+
+        logger.info("Fetching a new token")
+
         response = self.requester.post(self.TOKEN_URL, data=payload,
                                        headers=self._get_headers())
 
         if response.status_code != 200:
             raise SpotifyOAuthError(response.reason)
 
-        return self._decorate_with_expires_at(response.json())
+        logger.info("Successfully fetched a new token")
+
+        decorated_response = self._decorate_with_expires_at(response.json())
+        return decorated_response
 
     def refresh_token(self, token: Token) -> Token:
         # TODO: Implement flow of when 'refresh_token' is missing
@@ -146,13 +152,19 @@ class SpotifyOAuth(object):
             'grant_type': 'refresh_token',
             'refresh_token': str(refresh_token)
         }
+
+        logger.info("Fetching new refresh token")
+
         response = self.requester.post(self.TOKEN_URL, data=payload,
                                        headers=self._get_headers())
 
         if response.status_code != 200:
             raise SpotifyOAuthError(response.reason)
 
-        return self._decorate_with_expires_at(response.json())
+        logger.info("Successfully fetched a new refresh token")
+
+        decorated_token = self._decorate_with_expires_at(response.json())
+        return decorated_token
 
     def _get_headers(self) -> Headers:
         headers = {
