@@ -1,6 +1,6 @@
 import unittest
 
-from server.src import EmotionClient
+from src.emotion_client import EmotionClient
 
 
 class TestEmotionClient(unittest.TestCase):
