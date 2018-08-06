@@ -135,6 +135,12 @@ class SpotifyOAuth(object):
         return self._decorate_with_expires_at(response.json())
 
     def refresh_token(self, token: Token) -> Token:
+        # TODO: Implement flow of when 'refresh_token' is missing
+        if token['refresh_token'] is None:
+            logger.error(
+                "Token is missing 'refresh_token' field: %s" % str(token))
+            raise SpotifyOAuthError("Invalid token")
+
         refresh_token = token['refresh_token']
         payload = {
             'grant_type': 'refresh_token',
