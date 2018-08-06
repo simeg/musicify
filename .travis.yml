@@ -1,6 +1,7 @@
 language: python
 sudo: false
 cache: pip
+install: pip install -r server/requirements.txt
 python:
   - 3.6
 #  - 3.6-dev
