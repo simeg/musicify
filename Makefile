@@ -43,7 +43,4 @@ type-check:
 	@echo "Type Check: OK 👌"
 
 upload-coverage:
-	@pushd server &&
-	   codecov &&
-	     echo "Coverage Upload: OK 👌"
-	       && popd
+	@pushd server && codecov && echo "Coverage Upload: OK 👌" && popd
