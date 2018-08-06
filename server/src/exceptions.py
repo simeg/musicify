@@ -8,6 +8,11 @@ class SpotifyOAuthError(Exception):
         super().__init__(message)
 
 
+class EmotionClientError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
 class EmotionAPIConnectionError(Exception):
     def __init__(self, message):
         super().__init__(message)
