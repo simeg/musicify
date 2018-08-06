@@ -9,7 +9,7 @@ from src.spotify_client import SpotifyClient, Track
 
 
 def _spotify_client():
-    return SpotifyClient(EmotionClient("irrelevant-sub-key"))
+    return SpotifyClient(EmotionClient(None, "irrelevant-sub-key"))
 
 
 class TestSpotifyOAuth(unittest.TestCase):
