@@ -2,8 +2,7 @@ import logging
 import operator
 from typing import Dict
 
-from .exceptions import EmotionAPIConnectionError, EmotionAPIResponseError, \
-    EmotionClientError
+from .exceptions import EmotionClientError
 
 logger = logging.getLogger(__name__)
 
@@ -53,15 +52,15 @@ class EmotionClient(object):
             'Ocp-Apim-Subscription-Key': self.subscription_key,
         }
 
-        response = self.requester.post(self.API_URL, headers=headers,
+        response = self.requester.post(self.EMOTIONS_API_URL, headers=headers,
                                        data=image)
 
         if response.status_code != 200:
-            raise EmotionAPIConnectionError(response.reason)
+            raise EmotionClientError(response.reason)
 
         json = response.json()
         if not json:  # If no face found, an empty array is returned
-            raise EmotionAPIResponseError("Could not find a face in the image")
+            raise EmotionClientError("Could not find a face in the image")
 
         if len(json) > 1:
             logger.warning(
