@@ -3,7 +3,7 @@ import unittest
 from freezegun import freeze_time
 
 from src.exceptions import SpotifyOAuthError
-from src.spotify_oauth import SpotifyOAuth
+from src.spotify_oauth import SpotifyOAuth, Token
 from .utils import DotNotation, mock_requester, get_exception_msg
 
 
@@ -12,7 +12,7 @@ def _fake_token(expires_at=1531958718,
                 scope="specific-scope",
                 token_type="specific-token_type",
                 refresh_token="specific-refresh_token",
-                access_token="specific-access_token") -> SpotifyOAuth.Token:
+                access_token="specific-access_token") -> Token:
     return dict(
         expires_at=expires_at,
         expires_in=expires_in,
