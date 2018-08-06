@@ -11,6 +11,11 @@ logger = logging.getLogger(__name__)
 
 IS_PRODUCTION = bool(os.environ.get('IS_PRODUCTION', default=False))
 
+Token = Dict[str, Union[str, int]]
+Headers = Dict[str, str]
+JSONToken = str
+Scope = Union[str, None]
+
 
 class SpotifyOAuth(object):
     """
@@ -19,11 +24,6 @@ class SpotifyOAuth(object):
 
     AUTHORIZE_URL = 'https://accounts.spotify.com/authorize'
     TOKEN_URL = 'https://accounts.spotify.com/api/token'
-
-    Token = Dict[str, Union[str, int]]
-    Headers = Dict[str, str]
-    JSONToken = str
-    Scope = Union[str, None]
 
     def __init__(self,
                  requester,
