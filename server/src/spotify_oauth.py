@@ -5,7 +5,7 @@ import time
 from typing import Dict, Union
 from urllib.parse import quote
 
-from exceptions import SpotifyOAuthError
+from .exceptions import SpotifyOAuthError
 
 logger = logging.getLogger(__name__)
 

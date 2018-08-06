@@ -3,7 +3,7 @@ import operator
 import requests
 from typing import Dict
 
-from exceptions import EmotionAPIConnectionError, EmotionAPIResponseError
+from .exceptions import EmotionAPIConnectionError, EmotionAPIResponseError
 
 logger = logging.getLogger(__name__)
 

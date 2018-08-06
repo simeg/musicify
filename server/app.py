@@ -11,9 +11,9 @@ from flask import \
     request, \
     send_from_directory
 
-import config as cfg
-from spotify_oauth import SpotifyOAuth
-from utils import exists
+import src.config as cfg
+from src.spotify_oauth import SpotifyOAuth
+from src.utils import exists
 
 app = Flask(__name__, static_folder='static')
 

@@ -2,14 +2,13 @@ import unittest
 import hypothesis.strategies as st
 from hypothesis import given, settings
 
-import utils
-from utils import allowed_file_type, exists
-from server.test.utils import one_of_all_primitives
+from src.utils import allowed_file_type, exists, ALLOWED_IMAGE_EXTENSIONS
+from .utils import one_of_all_primitives
 
 
 class TestUtils(unittest.TestCase):
 
-    @given(st.sampled_from(sorted(utils.ALLOWED_IMAGE_EXTENSIONS)), st.text())
+    @given(st.sampled_from(sorted(ALLOWED_IMAGE_EXTENSIONS)), st.text())
     def test_allowed_file_type__pass(self, extension, name):
         file_name = "{}.{}".format(name, extension)
         assert allowed_file_type(file_name)
