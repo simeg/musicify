@@ -1,3 +1,4 @@
+import time
 import unittest
 
 from freezegun import freeze_time
@@ -36,6 +37,24 @@ def _spotify_oauth(
 
 
 class TestSpotifyOAuth(unittest.TestCase):
+
+    @freeze_time("2012-01-14 12:00:00")
+    def test_is_token_expired__pass(self):
+        now = 1326542400
+        expired_token = {
+            'expires_at': now,
+        }
+        result = SpotifyOAuth.is_token_expired(expired_token)
+        assert result
+
+    @freeze_time("2012-01-14 12:00:00")
+    def test_is_token_expired__fail(self):
+        now = 1326542400
+        not_expired_token = {
+            'expires_at': (now + 61),
+        }
+        result = SpotifyOAuth.is_token_expired(not_expired_token)
+        assert not result
 
     def test_json_to_cookie(self):
         actual = SpotifyOAuth.json_to_cookie(_make_fake_token())
