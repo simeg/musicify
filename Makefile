@@ -1,5 +1,7 @@
 .PHONY: build deploy deps lint login start serve test test-coverage upload-coverage
 
+# Travis cannot use 'pushd' or 'popd' without SHELL defined
+SHELL := /bin/bash
 IMAGE_NAME = musicify
 
 SOURCE_FILES = $(shell find ./server -type f -name "*.py" -not -path "./test/*")
