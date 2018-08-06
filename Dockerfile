@@ -10,15 +10,15 @@ RUN apk add --update --no-cache \
     linux-headers \
     curl
 
-ADD requirements.txt /tmp/requirements.txt
+ADD server/requirements.txt /tmp/requirements.txt
 
 RUN pip3 install --upgrade pip
 RUN pip3 install --no-cache-dir -qr /tmp/requirements.txt
 
-ADD src /src
-ADD app.py /app.py
-ADD static /static
-ADD templates /templates
+ADD server/src /src
+ADD server/app.py /app.py
+ADD server/static /static
+ADD server/templates /templates
 
 WORKDIR /
 

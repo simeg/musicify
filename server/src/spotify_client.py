@@ -3,8 +3,8 @@ from random import randint
 from typing import Any, Dict, Set, Union
 from flask import abort
 
-from src.emotion_client import Emotions, EmotionClient
-from src.genres import get_random_genre
+from emotion_client import Emotions, EmotionClient
+from server.src import get_random_genre
 
 logger = logging.getLogger(__name__)
 

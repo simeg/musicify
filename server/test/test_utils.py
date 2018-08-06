@@ -2,9 +2,9 @@ import unittest
 import hypothesis.strategies as st
 from hypothesis import given, settings
 
-from src import utils
-from src.utils import allowed_file_type, exists
-from test.utils import one_of_all_primitives
+import utils
+from utils import allowed_file_type, exists
+from server.test.utils import one_of_all_primitives
 
 
 class TestUtils(unittest.TestCase):

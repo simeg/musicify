@@ -1,12 +1,11 @@
 import base64
-import json
 import logging
 import os
 import time
 from typing import Dict, Union
 from urllib.parse import quote
 
-from src.exceptions import SpotifyOAuthError
+from exceptions import SpotifyOAuthError
 
 logger = logging.getLogger(__name__)
 

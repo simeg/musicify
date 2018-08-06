@@ -104,7 +104,7 @@ venv.bak/
 .mypy_cache/
 
 # Credentials file
-src/config.yaml
+server/src/config.yaml
 
 # JS lib files
 !static/lib
