@@ -1,4 +1,4 @@
-.PHONY: all build ci deploy fmt lint serve test-ci test verify-deps
+.PHONY: build ci coverage clean deploy deps fmt lint serve test test-ci verify-deps
 
 BINS = $(shell npm bin)
 
@@ -10,7 +10,11 @@ REFMT = $(shell which refmt)
 build:
 	$(REACT_SCRIPTS) build
 
-ci: verify-deps lint test-ci build
+ci: deps verify-deps lint test-ci build
+	@echo "Web App CI: OK 👌"
+
+coverage:
+	@echo "Not implemented yet"
 
 clean:
 	rm -rf ./node_modules
@@ -31,11 +35,12 @@ lint:
 serve:
 	@$(YARN) start
 
-test-ci:
-	@CI=true $(REACT_SCRIPTS) test
-
 test:
 	@$(REACT_SCRIPTS) test
+
+test-ci:
+	@echo "Not implemented yet"
+	#@$(REACT_SCRIPTS) test --ci
 
 verify-deps:
 	@$(YARN) check --integrity

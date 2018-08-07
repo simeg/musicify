@@ -1,28 +1,20 @@
-language: python
-sudo: false
-cache: pip
-install: pip install -r server/requirements.txt
-python:
-  - 3.6
-#  - 3.6-dev
-#  - 3.7-dev
-
-stages:
-  - lint
-  - test
-  - name: test coverage
-    if: branch = master
-
-jobs:
+matrix:
   include:
-    - stage: lint
-      script: make deps lint
+    - language: python
+      sudo: false
+      python: 3.6
+      cache: pip
+      install: pip install -r server/requirements.txt
+      script: pushd server; make ci
+      after_success:
+        - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+            make coverage
+          fi
 
-    - stage: test
-      script: make deps test
-
-    - stage: test coverage
-      script: make test-coverage upload-coverage
+    - language: node_js
+      node_js: "9"
+      cache: yarn
+      script: pushd web_app; make ci
 
 notifications:
   email:
