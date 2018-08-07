@@ -1,3 +1,5 @@
+open Utility;
+
 [%bs.raw
   {|require('../../node_modules/bootstrap/dist/css/bootstrap.min.css')|}
 ];
@@ -12,7 +14,8 @@
 
 let component = ReasonReact.statelessComponent("Landing");
 
-let go_to_mix_page = _evt => Router.push("/mix");
+let url = "http://localhost:8000/login";
+let goToMixPage = _evt => Utility.setLocation(url);
 
 let make = _children => {
   ...component,
@@ -29,7 +32,7 @@ let make = _children => {
             <a
               className="btn btn-primary btn-xl rounded-pill mt-5"
               id="btn-start"
-              onClick=go_to_mix_page>
+              onClick=goToMixPage>
               (ReasonReact.string(" Start"))
             </a>
           </div>

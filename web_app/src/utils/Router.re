@@ -10,7 +10,10 @@ module Router = {
     | [_base, ...tl] => tl
     };
 
-  let watchUrl = callback => ReasonReact.Router.watchUrl(url => callback({...url, path: cdr(url.path)}));
+  let watchUrl = callback =>
+    ReasonReact.Router.watchUrl(url =>
+      callback({...url, path: cdr(url.path)})
+    );
 
   let getInitialUrl = () => {
     let url = ReasonReact.Router.dangerouslyGetInitialUrl();
