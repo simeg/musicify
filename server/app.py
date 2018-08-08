@@ -26,10 +26,15 @@ APP_BASE_URL = 'TODO' if IS_PRODUCTION else 'http://0.0.0.0:3000'
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def _proxy(path):
-    # TODO: Verify that path exists, otherwise redirect to 404
+    logger.info("/proxy called with /%s" % path)
+
+    valid_paths = ['', 'mix']
+
+    if path not in valid_paths:
+        return redirect('%s/app/%s' % (APP_BASE_URL, '404'))
+
     # TODO: Verify that token exists, otherwise redirect to login and then
     #       redirect to wanted path
-    logger.info("/proxy called with /%s" % path)
     return redirect('%s/app/%s' % (APP_BASE_URL, path))
 
 
