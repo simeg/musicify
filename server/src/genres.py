@@ -1,7 +1,7 @@
 from random import randint
 from typing import List
 
-_all_genres = \
+_all_genres: List[str] = \
     ["acoustic", "afrobeat", "alt-rock", "alternative", "ambient",
      "anime", "black-metal", "bluegrass", "blues", "bossanova",
      "brazil", "breakbeat", "british", "cantopop", "chicago-house",
