@@ -17,6 +17,10 @@ matrix:
         yarn: true
         directories:
           - web_app/node_modules
+          - packages/create-react-app/node_modules
+          - packages/react-scripts/node_modules
+          - web_app/packages/create-react-app/node_modules
+          - web_app/packages/react-scripts/node_modules
       script: make js-ci
 
 notifications:
