@@ -7,9 +7,7 @@ matrix:
       install: pip install -r server/requirements.txt
       script: make py-ci
       after_success:
-        - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
-            make coverage
-          fi
+        - if [ "$TRAVIS_BRANCH" = "master" ]; then make py-coverage; fi
 
     - language: node_js
       node_js: "stable"
