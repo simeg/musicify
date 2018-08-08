@@ -7,7 +7,6 @@ from flask import \
     jsonify, \
     make_response, \
     redirect, \
-    render_template, \
     request, \
     send_from_directory
 
@@ -21,12 +20,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 IS_PRODUCTION = bool(os.environ.get('IS_PRODUCTION', default=False))
+APP_BASE_URL = 'TODO' if IS_PRODUCTION else 'http://0.0.0.0:3000'
 
 
 @app.route('/', methods=['GET'])
 def _index():
     logger.info('/ called')
-    return render_template('index.html')
+    return make_response(redirect(APP_BASE_URL))
 
 
 @app.route('/login', methods=['GET'])
@@ -64,22 +64,12 @@ def _callback():
 
     token = sp.get_new_token(request)
 
-    response = make_response(redirect('/mix'))
+    response = make_response(redirect('%s/app/mix' % APP_BASE_URL))
     cookie = sp.json_to_cookie(token)
     logger.info('Setting token as cookie: %s' % cookie)
     response.set_cookie('spotify_token', cookie)
 
     return response
-
-
-@app.route('/mix', methods=['GET'])
-def _mix():
-    logger.info('/mix called')
-    if _get_token(request) is None:
-        logger.info('No auth cookie found - redirecting to /login')
-        return redirect('/login', code=302)
-
-    return make_response(render_template('mix.html'))
 
 
 #
