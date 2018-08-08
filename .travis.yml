@@ -5,7 +5,7 @@ matrix:
       python: 3.6
       cache: pip
       install: pip install -r server/requirements.txt
-      script: pushd server; make ci
+      script: make py-ci
       after_success:
         - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
             make coverage
@@ -17,7 +17,7 @@ matrix:
         yarn: true
         directories:
           - node_modules
-      script: pushd web_app; make ci
+      script: make js-ci
 
 notifications:
   email:
