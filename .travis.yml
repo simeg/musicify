@@ -12,8 +12,11 @@ matrix:
           fi
 
     - language: node_js
-      cache: yarn
       node_js: "stable"
+      cache:
+        yarn: true
+        directories:
+          - node_modules
       script: pushd web_app; make ci
 
 notifications:
