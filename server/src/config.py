@@ -7,7 +7,7 @@ from typing import Dict, Any, Union
 logger = logging.getLogger(__name__)
 IS_PRODUCTION = bool(os.environ.get('IS_PRODUCTION', default=False))
 
-config_path = "./server/src/config.yaml"
+config_path = "./src/config.yaml"
 
 Config = Union[Dict[str, Any], None]
 
