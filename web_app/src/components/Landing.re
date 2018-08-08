@@ -14,7 +14,7 @@ open Utility;
 
 let component = ReasonReact.statelessComponent("Landing");
 
-let url = "http://localhost:8000/login";
+let url = "http://0.0.0.0:8000/login";
 let goToMixPage = _evt => Utility.setLocation(url);
 
 let make = _children => {
@@ -33,7 +33,7 @@ let make = _children => {
               className="btn btn-primary btn-xl rounded-pill mt-5"
               id="btn-start"
               onClick=goToMixPage>
-              (ReasonReact.string(" Start"))
+              (ReasonReact.string("Start"))
             </a>
           </div>
         </div>
