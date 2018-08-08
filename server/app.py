@@ -23,10 +23,14 @@ IS_PRODUCTION = bool(os.environ.get('IS_PRODUCTION', default=False))
 APP_BASE_URL = 'TODO' if IS_PRODUCTION else 'http://0.0.0.0:3000'
 
 
-@app.route('/', methods=['GET'])
-def _index():
-    logger.info('/ called')
-    return make_response(redirect(APP_BASE_URL))
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def _proxy(path):
+    # TODO: Verify that path exists, otherwise redirect to 404
+    # TODO: Verify that token exists, otherwise redirect to login and then
+    #       redirect to wanted path
+    logger.info("/proxy called with /%s" % path)
+    return redirect('%s/app/%s' % (APP_BASE_URL, path))
 
 
 @app.route('/login', methods=['GET'])
