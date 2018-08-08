@@ -16,7 +16,7 @@ matrix:
       cache:
         yarn: true
         directories:
-          - node_modules
+          - web_app/node_modules
       script: make js-ci
 
 notifications:
