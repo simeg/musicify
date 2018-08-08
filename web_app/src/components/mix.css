@@ -1,0 +1,24 @@
+.mix__main_container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.mix__top_container {
+    background: navajowhite;
+
+    text-align: center;
+    vertical-align: center;
+
+    display: flex;
+    order: 1;
+    flex-grow: 1;
+}
+
+.mix__bottom_container {
+    background: #9ad49a;
+
+    display: flex;
+    order: 2;
+    flex-grow: 1;
+}
