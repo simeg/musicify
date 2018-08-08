@@ -11,6 +11,8 @@ from flask import \
     send_from_directory
 
 import src.config as cfg
+from src.emotion_client import EmotionClient
+from src.spotify_client import SpotifyClient
 from src.spotify_oauth import SpotifyOAuth
 from src.utils import exists
 
@@ -81,7 +83,19 @@ def _callback():
     return response
 
 
-#
+@app.route('/v1/user', methods=['GET'])
+def _user():
+    logger.info('/v1/user called')
+
+    # For now, assume we always have token
+    client = _spotify_client(_get_token(request))
+    response = client.get_user()
+
+    return jsonify({
+        'user': response,
+    })
+
+
 # @app.route('/v1/tracks', methods=['POST'])
 # def _tracks():
 #     logger.info('/v1/tracks called')
@@ -140,6 +154,18 @@ def _spotify_oauth() -> SpotifyOAuth:
         state=state,
         scope=scope
     )
+
+
+def _spotify_client(token) -> SpotifyClient:
+    return SpotifyClient(
+        requests,
+        _emotion_client(),
+        token)
+
+
+def _emotion_client() -> EmotionClient:
+    c = cfg.face_api()
+    return EmotionClient(requests, c['subscription_key'])
 
 
 if __name__ == '__main__':

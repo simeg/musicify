@@ -3,6 +3,7 @@ from random import randint
 from typing import Any, Dict, Set, Union
 from flask import abort
 
+from .exceptions import SpotifyClientError
 from .emotion_client import Emotions, EmotionClient
 from .genres import get_random_genre
 
@@ -20,29 +21,54 @@ SlimResponse = Dict[str, Union[Count, Uri]]
 
 Seed = Dict[str, Union[str, float]]
 
+User = Dict[str, str]
+
 
 class SpotifyClient(object):
     """
-    A wrapper for speaking to the Spotify Web API.
+    A wrapper for speaking to the Spotify Web API
     """
 
-    def __init__(self, emotion_client: EmotionClient):
+    def __init__(self,
+                 requester,
+                 emotion_client: EmotionClient,
+                 token: str):
         """
             Creates a SpotifyClient object
             Parameters:
+                 - requester - the object to make HTTP requests
                  - emotion_client - the emotion client instance
+                 - token - the Spotify auth token
         """
 
+        self.requester = requester
         self.emotion_client = emotion_client
+        self.token = token
 
-    @staticmethod
-    def _get_uri(track: Track) -> Uri:
+    def get_user(self) -> User:
+        logger.info("Getting current user profile")
+
+        url = "https://api.spotify.com/v1/me"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "Bearer %s" % self.token
+        }
+
+        response = self.requester.get(url, headers=headers)
+
+        if response.status_code != 200:
+            raise SpotifyClientError(response.reason)
+
+        return response.json()
+
+    def _get_uri(self, track: Track) -> Uri:
         return {
             "uri": str(track["uri"])
         }
 
-    @staticmethod
-    def _verify_params(emotions: Emotions, limit: int):
+    def _verify_params(self, emotions: Emotions, limit: int):
         if limit < 1 or limit > 100:
             abort(
                 400,
