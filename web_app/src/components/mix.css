@@ -13,6 +13,14 @@
     display: flex;
     order: 1;
     flex-grow: 1;
+    flex-wrap: wrap;
+}
+
+.mix__top_container__top_section, .mix__top_container__bottom_section {
+    width: 100%;
+    display: flex;
+    flex-grow: 1;
+    flex-direction: row;
 }
 
 .mix__bottom_container {
@@ -21,4 +29,11 @@
     display: flex;
     order: 2;
     flex-grow: 1;
+}
+
+/* Placeholder */
+.placeholder__main_container {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
 }
