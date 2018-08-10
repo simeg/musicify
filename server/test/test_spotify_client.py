@@ -8,8 +8,11 @@ from src.emotion_client import EmotionClient
 from src.spotify_client import SpotifyClient, Track
 
 
-def _spotify_client():
-    return SpotifyClient(EmotionClient(None, "irrelevant-sub-key"))
+def _spotify_client(requester=None):
+    return SpotifyClient(
+        requester,
+        EmotionClient(None, "irrelevant-sub-key"),
+        "irrelevant-token")
 
 
 class TestSpotifyOAuth(unittest.TestCase):
@@ -21,14 +24,16 @@ class TestSpotifyOAuth(unittest.TestCase):
             "arbitrary-key-2": "arbitrary-value-2",
             "uri": value,
         }
-        actual = SpotifyClient._get_uri(track)
+        sp_client = _spotify_client()
+        actual = sp_client._get_uri(track)
         expected = {"uri": value}
         assert actual == expected
 
     @given(st.one_of(st.integers(min_value=100), st.just(0)))
     def test_verify_params__faulty_limit(self, limit):
         try:
-            SpotifyClient._verify_params({"irrelevant": 0.0}, limit)
+            sp_client = _spotify_client()
+            sp_client._verify_params({"irrelevant": 0.0}, limit)
         except BadRequest as e:
             assert e.code == 400
             assert e.description == "The limit param has to be between " \
@@ -37,7 +42,8 @@ class TestSpotifyOAuth(unittest.TestCase):
     @given(st.integers(min_value=1, max_value=100))
     def test_verify_params__acceptable_limit(self, limit):
         try:
-            SpotifyClient._verify_params({"irrelevant": 0.0}, limit)
+            sp_client = _spotify_client()
+            sp_client._verify_params({"irrelevant": 0.0}, limit)
         except BadRequest:
             self.fail("Should not throw exception for limit %s" % limit)
 
@@ -45,7 +51,8 @@ class TestSpotifyOAuth(unittest.TestCase):
         try:
             irrelevant_acceptable_limit = 10
             empty_emotions = {}
-            SpotifyClient._verify_params(
+            sp_client = _spotify_client()
+            sp_client._verify_params(
                 empty_emotions, irrelevant_acceptable_limit)
         except BadRequest as e:
             assert e.code == 400
@@ -55,7 +62,8 @@ class TestSpotifyOAuth(unittest.TestCase):
         try:
             irrelevant_acceptable_limit = 10
             emotions = {"arbitrary-key": 0.0}
-            SpotifyClient._verify_params(emotions, irrelevant_acceptable_limit)
+            sp_client = _spotify_client()
+            sp_client._verify_params(emotions, irrelevant_acceptable_limit)
         except BadRequest:
             self.fail("Should not throw exception for non-empty emotions")
 
